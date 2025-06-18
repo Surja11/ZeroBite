@@ -10,7 +10,7 @@ class Business(models.Model):
   ]
   user = models.OneToOneField(User, on_delete = models.CASCADE, related_name = "business")
   phone = models.CharField(max_length=10)
-  store_address = models.TextField
+  store_address = models.TextField()
   business_name = models.CharField(max_length = 150)
   business_type = models.CharField(max_length = 20, choices=BUSINESS_TYPE)
 

@@ -6,14 +6,14 @@ class UserManager(BaseUserManager):
     if not email:
       raise ValueError("Email is required")
     
-    email = self.normalilze_email(email)
+    email = self.normalize_email(email)
     user = self.model(email = email , user_type = user_type, **extra_fields)
     user.set_password(password)
     user.save()
     return user
   
-  def create_superuser(self, email, password = None, **extra_fields):
-    return self.create_user(email,user_type = "Admin", password = password, is_staff = True, is_superuser = True, **extra_fields)
+  def create_superuser(self, email, password = None, user_type ="Admin" ,**extra_fields):
+    return self.create_user(email, user_type, password = password, is_staff = True, is_superuser = True, **extra_fields)
   
 class User(AbstractBaseUser, PermissionsMixin):
   USER_TYPE_CHOICES = [
@@ -24,10 +24,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
   email = models.EmailField(unique = True)
   user_type = models.CharField(max_length = 20,choices=USER_TYPE_CHOICES)
-  first_name = models.CharField(max_length = 100,blank = True)
-  last_name = models.CharField(max_length=100,blank = True)
+  name = models.CharField(max_length = 100,blank = True)
   is_active = models.BooleanField(default = True)
-  is_staff = models.BooleanField(default = True)
+  is_staff = models.BooleanField(default = False)
 
   USERNAME_FIELD = 'email'
   REQUIRED_FIELDS = ['user_type']
