@@ -1,0 +1,99 @@
+.filters-container {
+  width: 250px;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.filter-section {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.filter-section h4 {
+  margin-bottom: 10px;
+  color: #333;
+  font-size: 14px;
+}
+
+/* Range Slider Styles */
+.range-slider {
+  width: 100%;
+  height: 6px;
+  -webkit-appearance: none;
+  background: #ddd;
+  border-radius: 3px;
+  outline: none;
+  margin: 10px 0;
+}
+
+.range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  background: #7bb400;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.price-display, .distance-display {
+  text-align: center;
+  font-size: 13px;
+  color: #666;
+  margin-top: 5px;
+}
+
+/* Categories */
+.categories-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.category-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.category-item input {
+  accent-color: #7bb400;
+}
+
+/* Expiry Select */
+.expiry-select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+}
+
+/* Apply Button */
+.apply-filters {
+  width: 100%;
+  padding: 10px;
+  background: #7bb400;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.apply-filters:hover {
+  background: #6aa000;
+}
+.filters-container h1,h4 {
+  text-align: center;
+  font-weight: bold;
+}
+
+

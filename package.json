@@ -1,0 +1,20 @@
+{
+  "name": "zerobite",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Surja11/ZeroBite.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Surja11/ZeroBite/issues"
+  },
+  "homepage": "https://github.com/Surja11/ZeroBite#readme",
+  "description": ""
+}
