@@ -82,8 +82,12 @@ WSGI_APPLICATION = 'zerobite.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'zerobite_db',
+        'USER': 'postgres',
+        'PASSWORD': 'stha9989',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
