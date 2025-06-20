@@ -33,8 +33,26 @@ function Register() {
 			setConPassword("");
 			navigate("/");
 		} catch (error) {
-			console.error("Failed to register", error);
-		}
+  console.error("Failed to register", error);
+
+  if (error.response?.data) {
+    const errorData = error.response.data;
+
+    // Handle a single message field (like: { message: "..." })
+    if (errorData.message) {
+      setError(errorData.message);
+    } 
+    // Handle field errors (like: { email: ["..."], password2: ["..."] })
+    else {
+      const errorMessages = Object.values(errorData).flat().join(". ");
+      setError(errorMessages);
+    }
+  } else {
+    setError("Network error or server not reachable.");
+  }
+}
+
+
 	};
 
 	return (
@@ -42,12 +60,17 @@ function Register() {
 			<div className="bg-gray-100 p-8 rounded-lg shadow-md w-full max-w-[600px]">
 				<h2 className="text-3xl font-semi-bold mb-6 text-center text-[#287588]">
 					Create Account
-				</h2>
+				</h2>{error && (
+  <div className="bg-red-100 text-red-700 text-sm font-medium px-4 py-2 rounded mb-4 text-center">
+    {error}
+  </div>
+)}
 
 				<div className="">
 					<form
 						action="/register"
 						method="POST"
+						onSubmit={HandleSubmit}
 						className=" px-4 py-3 rounded mb-4 flex flex-col space-y-6"
 					>
 						<div>
@@ -72,7 +95,7 @@ function Register() {
 							<input
 								value={email}
 								onChange={(e) => setEmail(e.target.value)}
-								type="text"
+								type="email"
 								placeholder="Email"
 								className={`required shadow appearance-none border bg-gray-50 italic border-gray-400  rounded-2xl w-full py-2 placeholder:text-[13px]  px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
 							/>
@@ -116,7 +139,6 @@ function Register() {
 						</div>
 						<div>
 							<button
-								onClick={HandleSubmit}
 								type="submit"
 								className="bg-[#1b5968] hover:bg-[#4b5f64] text-white font-bold py-2 px-4 rounded-xl focus:outline-none focus:shadow-outline w-full disabled:opacity-50"
 							>
