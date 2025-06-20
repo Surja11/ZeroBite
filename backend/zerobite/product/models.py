@@ -22,7 +22,7 @@ class Product(models.Model):
   name = models.CharField(max_length=50)
   description = models.TextField()
   price = models.DecimalField(max_digits = 8, decimal_places = 2)
-  image = models.ImageFiled(upload_to='products/', blank = True, null = True)
+  image = models.ImageField(upload_to='products/', blank = True, null = True)
   manufactured_date = models.DateField()
   expiry_date = models.DateField()
   available = models.BooleanField(default = True)
