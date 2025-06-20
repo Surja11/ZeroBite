@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import Header from './components/Header';
-import Card from './components/ProductCard';
+import Header from "../components/Header"
+import Card from '/components/ProductCard';
 import Filters from './components/FilterBar';
 import products from '../public/products.json'; 
-import './Products.css';
-
+import '../components/styles/Products.css'
 const ProductPage = () => {
   
   const [searchTerm, setSearchTerm] = useState('');
