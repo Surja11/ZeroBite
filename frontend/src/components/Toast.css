@@ -1,0 +1,12 @@
+/* src/components/Toast.css */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #d4edda;
+  color: #155724;
+  padding: 12px 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
