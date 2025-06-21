@@ -1,12 +1,16 @@
-import { useState } from 'react'
+// App.jsx or wherever your routes are defined
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ProductPage from './Products';
-import './App.css'
+import ProductDetail from './ProductDetail';
 
-function App() {
-  return (
-    <div className="App">
-      <ProductPage/>
-    </div>
-  );
-}
-export default App
+const App = () => (
+  <Router>
+    <Routes>
+      <Route path="/" element={<ProductPage />} />
+      <Route path="/product/:id" element={<ProductDetail />} />
+    </Routes>
+  </Router>
+);
+
+export default App;
