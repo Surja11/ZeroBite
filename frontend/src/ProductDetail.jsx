@@ -17,43 +17,23 @@ const ProductDetail = () => {
   const { addToCart } = useCart(); // <-- NEW
 
   useEffect(() => {
-    // ===== MOCK DATA START =====
-    const fakeProduct = {
-      id,
-      name: "Sample Product",
-      location: "Mock City",
-      expiry_date: new Date(Date.now() + 86400000).toISOString(),
-      price: 120,
-      image_url: "/kitkat.jpg",
-      description: "This is a mocked product description.",
-      tags: ["snack", "sweet"],
-    };
-    const fakeRecommended = [
-      {
-        id: "2",
-        name: "Mocked Snack A",
-        location: "Mock City",
-        expiry_date: new Date(Date.now() + 172800000).toISOString(),
-        price: 90,
-        image_url: "/kitkat.jpg",
-        description: "Similar product description",
-        tags: ["snack"],
-      },
-      {
-        id: "3",
-        name: "Mocked Snack B",
-        location: "Mock City",
-        expiry_date: new Date(Date.now() + 259200000).toISOString(),
-        price: 95,
-        image_url: "/kitkat.jpg",
-        description: "Another similar product",
-        tags: ["snack", "sweet"],
-      },
-    ];
-    setProduct(fakeProduct);
-    setRecommended(fakeRecommended);
-    // ===== MOCK DATA END =====
+    fetch('/products.json')
+    .then(res => res.json())
+    .then(data => {
+      const found = data.find(p => p.id.toString() === id);
 
+      if (!found) {
+        console.error("Product not found with id:", id);
+        setProduct(null);
+        return;
+      }
+
+      setProduct(found);
+
+      const recs = data.filter(p => p.category === found.category && p.id.toString() !== id);
+      setRecommended(recs.slice(0, 3));
+    })
+    .catch(err => console.error("Error loading product detail:", err));
     /*
      // ===== FETCH REAL DATA =====
     // 1. Fetch main product
@@ -86,7 +66,7 @@ const ProductDetail = () => {
     alert(`Added ${prod.name} to cart!`); // Simple alert, replace with toast or other UI
   };
 
-  return (
+   return (
     <div>
       <Header />
       <div className="product-detail">
@@ -99,14 +79,14 @@ const ProductDetail = () => {
             <p><strong>Price:</strong> Rs. {product.price}</p>
             <p>{product.description}</p>
             <div className="actions">
-              <button 
-                className="add-to-cart" 
-                onClick={() => handleAddToCart(product)} // <-- Add to cart main product
-              >
-                Add to Cart
-              </button>
-              <button className="buy-now">Buy Now</button>
-            </div>
+            <button
+              className="add-to-cart"
+              onClick={() => addToCart(product)}
+            >
+              Add to Cart
+            </button>
+            <button className="buy-now">Buy Now</button>
+          </div>
           </div>
         </div>
 
@@ -114,11 +94,10 @@ const ProductDetail = () => {
           <h2>Recommended for You</h2>
           <div className="recommended-list">
             {recommended.map(p => (
-              // Wrap whole card in Link so clicking card navigates
-              <Link 
-                key={p.id} 
-                to={`/product/${p.id}`} 
-                style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+              <Link
+                key={p.id}
+                to={`/product/${p.id}`}
+                style={{ textDecoration: 'none', color: 'inherit' }}
               >
                 <Card product={p} />
               </Link>
@@ -131,7 +110,6 @@ const ProductDetail = () => {
 };
 
 export default ProductDetail;
-
 // import React, { useEffect, useState } from 'react';
 // import { useParams, Link } from 'react-router-dom';
 // import Header from './components/Header';

@@ -29,7 +29,7 @@ const FilterBar = ({ filters, setFilters, onApply }) => {
 
   const applyFilters = () => {
     setFilters(localFilters);
-    onApply();  
+    onApply();
   };
 
   return (
@@ -54,7 +54,7 @@ const FilterBar = ({ filters, setFilters, onApply }) => {
         </div>
       </div>
 
-      
+
       <div className="filter-section">
         <h4>Expiry Date</h4>
         <div className="radio-group">
@@ -73,7 +73,7 @@ const FilterBar = ({ filters, setFilters, onApply }) => {
         </div>
       </div>
 
-      
+
       <div className="filter-section">
         <h4>Price Range</h4>
         <div className="price-display">
@@ -97,8 +97,27 @@ const FilterBar = ({ filters, setFilters, onApply }) => {
         />
       </div>
 
-     
+
       <button className="apply-filters" onClick={applyFilters}>Apply Filters</button>
+      <button
+        className="reset-filters"
+        onClick={() => {
+          setLocalFilters({
+            location: '',
+            expiry: '',
+            priceRange: [0, 1000],
+          });
+          setFilters({
+            location: '',
+            expiry: '',
+            priceRange: [0, 1000],
+          });
+          onApply();
+        }}
+      >
+        Reset Filters
+      </button>
+
     </div>
   );
 };

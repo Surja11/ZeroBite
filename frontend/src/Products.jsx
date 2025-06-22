@@ -3,6 +3,7 @@ import Header from './components/Header';
 import Card from './components/ProductCard';
 import Filters from './components/FilterBar';
 import './Products.css';
+import { Link } from 'react-router-dom';
 
 const API_BASE_URL = 'http://localhost:8000/api'; // change this to your backend URL
 
@@ -22,32 +23,12 @@ const ProductPage = () => {
   const categories = ['All', 'Bakery', 'Packaged Food', 'Restaurant Meal'];
 
   useEffect(() => {
-    //Mock data start
-     const mockProducts = [
-      {
-        id: '1',
-        name: 'Mocked Bread',
-        location: 'Test City',
-        expiry_date: new Date(Date.now() + 86400000).toISOString(), // 1 day from now
-        price: 50,
-        category: 'Bakery',
-        tags: ['bread', 'fresh'],
-        image_url: '/mockbread.jpg',
-      },
-      {
-        id: '2',
-        name: 'Mocked Sandwich',
-        location: 'Test City',
-        expiry_date: new Date(Date.now() + 3600000 * 5).toISOString(), // 5 hours from now
-        price: 80,
-        category: 'Restaurant Meal',
-        tags: ['sandwich', 'lunch'],
-        image_url: '/mocksandwich.jpg',
-      },
-    ];
-    setProducts(mockProducts);
-    setFilteredProducts(mockProducts.slice(0, 8));
-    //mock data end that canbe uncomment after db connection
+    fetch('/products.json')
+      .then(res => res.json())
+      .then(data => {
+        setProducts(data);
+        setFilteredProducts(data.slice(0, 8));
+      })
 
     // fetch(`${API_BASE_URL}/products/`)
     //   .then((res) => {
@@ -62,7 +43,7 @@ const ProductPage = () => {
     //   .catch((err) => console.error('Error fetching products:', err));
   }, []);
 
-  useEffect(() => {
+ useEffect(() => {
     if (
       !displayOnEnter &&
       selectedCategory === 'All' &&
@@ -72,13 +53,13 @@ const ProductPage = () => {
     )
       return;
 
-    const filtered = products.filter((product) => {
+    const filtered = products.filter(product => {
       const matchesSearch =
         product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         product.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (product.tags && product.tags.some((tag) =>
+        (product.tags || []).some(tag =>
           tag.toLowerCase().includes(searchTerm.toLowerCase())
-        ));
+        );
 
       const matchesCategory =
         selectedCategory === 'All' || product.category === selectedCategory;
@@ -95,8 +76,7 @@ const ProductPage = () => {
         if (filters.expiry === 'Today') return diffDays >= 0 && diffDays < 1;
         if (filters.expiry === 'In 3 Days') return diffDays >= 0 && diffDays <= 3;
         if (filters.expiry === 'In a Week') return diffDays >= 0 && diffDays <= 7;
-        if (filters.expiry === 'In a Month')
-          return diffDays >= 0 && diffDays <= 30;
+        if (filters.expiry === 'In a Month') return diffDays >= 0 && diffDays <= 30;
         return true;
       })();
 
@@ -135,7 +115,7 @@ const ProductPage = () => {
       />
 
       <div className="options" style={{ marginTop: '1rem', marginBottom: '1rem' }}>
-        {categories.map((category) => (
+        {categories.map(category => (
           <button
             key={category}
             onClick={() => {
@@ -165,7 +145,13 @@ const ProductPage = () => {
         <div className="products-container">
           {filteredProducts.length > 0 ? (
             filteredProducts.map((product) => (
-              <Card key={product.id} product={product} />
+              <Link
+                key={product.id}
+                to={`/product/${product.id}`}
+                style={{ textDecoration: 'none', color: 'inherit' }}
+              >
+                <Card product={product} />
+              </Link>
             ))
           ) : (
             <p>No products found.</p>
