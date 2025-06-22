@@ -13,8 +13,8 @@ class Business(User):
   store_address = models.TextField()
   business_name = models.CharField(max_length = 150)
   business_type = models.CharField(max_length = 20, choices=BUSINESS_TYPE)
-  store_latitude = models.DecimalField(max_digits=9, decimal_places= 6)
-  store_longitude = models.DecimalField(max_digits= 9, decimal_places = 6)
+  store_latitude = models.DecimalField(max_digits=11, decimal_places= 8)
+  store_longitude = models.DecimalField(max_digits= 11, decimal_places = 8)
 
   class Meta:
     db_table= "business_business"
