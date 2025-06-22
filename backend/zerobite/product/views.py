@@ -25,8 +25,8 @@ class ProductView(APIView):
     expiry_list = []
 
     for product in products:
-      store_lat = float(product.store.latitude)
-      store_lon = float(product.store.longitude)
+      store_lat = float(product.business.store_latitude)
+      store_lon = float(product.business.store_longitude)
       expiry = product.expiry_date
 
       distance = haversine(user_lat, store_lat, user_lon, store_lon)
@@ -60,18 +60,46 @@ class ProductView(APIView):
   
   
 class ProductViewSet(viewsets.ViewSet):
-  permission_classes = [AddProductPermission]
+  permission_classes = [IsBusinessPermission]
 
   def create(self, request):
     try:
-      business_instance = request.user.business
-      
-      
       serializer = ProductSerializer(data = request.data, context = {'request': request})
-    
       if serializer.is_valid():
         serializer.save()
         return Response({"message": "Product Added"}, status= status.HTTP_201_CREATED)
     except:
       return Response({"error": "User is not associated with business"}, status= status.HTTP_400_BAD_REQUEST)
     return Response(serializer.errors)
+  
+  def list(self, request):
+      all_products = Product.objects.filter(business = request.user.business) 
+      serializer = ProductSerializer(all_products, many = True)
+      return Response(serializer.data)
+   
+  
+  def retrieve(self,request, pk = None):
+    id = pk 
+    if id is not None:
+      product = Product.objects.get(id = id)
+      serializer = ProductSerializer(product)
+      return Response(serializer.data)
+    
+  def update(self, request, pk):
+    id = pk 
+    product = Product.objects.get(pk = id)
+    try:
+      serializer = ProductSerializer(product, data = request.data, context = {'request': request})
+      if serializer.is_valid():
+        serializer.save()
+        return Response({'message': 'Product updated'},status = status.HTTP_200_OK)
+    except:
+      return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+    
+  def destroy(self, request, pk):
+    id = pk
+    product = Product.objects.get(pk= id)
+    product.delete()
+    return Response({'message': 'Deleted'})
+    
+

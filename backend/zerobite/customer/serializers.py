@@ -26,16 +26,18 @@ class CustomerRegisterSerializer(serializers.ModelSerializer):
     password = validated_data.pop('password')
     validated_data.pop('password2')
 
-    user = User.objects.create_user(email = email, name = name, password = password, user_type = "customer")
-    user.save()
+    # user = User.objects.create_user(email = email, name = name, password = password, user_type = "customer")
+    # user.save()
 
-    customer = Customer.objects.create(
-      user = user,
+    customer = Customer.objects.create_user(
+      email = email,
+      name = name,
+      password = password,
+      user_type = "customer",
       first_name = first_name,
       last_name = last_name,
       phone = validated_data['phone'],
       address = validated_data['address']
-
-    )
+      )
     customer.save()
     return customer

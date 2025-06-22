@@ -7,7 +7,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = Product
-    fields = ['business','category',
+    fields = ['id','business','category',
   'name','description','price','image',
   'manufactured_date','expiry_date',
   'available','discounted_price']
@@ -15,20 +15,21 @@ class ProductSerializer(serializers.ModelSerializer):
   
 
   def get_discounted_price(self, obj):
-    if obj['expiry_date']-date.today()<=1:
+    days_to_expiry = (obj.expiry_date - date.today()).days 
+    if days_to_expiry< 2:
       return obj.price * 0.4
-    elif obj['expiry_date']- date.today()<=3:
+    elif days_to_expiry<4:
       return obj.price *0.65
-    elif obj['expiry_date'] -date.today()<=6:
+    elif days_to_expiry<7:
       return obj.price * 0.8
-    elif obj['expiry_date'] - date.today()<=10:
+    elif days_to_expiry<11:
       return obj.price * 0.9
     return obj.price
   
   def create(self, validated_data):
     validated_data.pop('discounted_price', None)
 
-    validated_data['business'] = self.context['request'].user.business
+    validated_data['business'] = self.context['request'].business
 
     return Product.objects.create(**validated_data)
     

@@ -27,7 +27,7 @@ router = DefaultRouter()
 
 #Registering ViewSet with Router
 
-router.register('productapi', views.ProductViewSet,basename = 'productadd')
+router.register('productapi', views.ProductViewSet,basename = 'product')
 
 
 

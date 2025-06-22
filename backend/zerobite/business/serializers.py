@@ -11,9 +11,9 @@ class BusinessRegisterSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Business
-        fields = [
+        fields = [ 'id',
             'email', 'name', 'password', 'password2',
-            'business_name', 'phone', 'store_address', 'business_type'
+            'business_name', 'phone', 'store_address', 'business_type','store_latitude','store_longitude'
         ]
     
     def validate(self, data):
@@ -29,20 +29,31 @@ class BusinessRegisterSerializer(serializers.ModelSerializer):
         validated_data.pop('password2') 
         
    
-        user = User.objects.create_user(
-            email=email,
-            name=name,
-            password=password,
-            user_type="business"  
-        )
+        # user = User.objects.create_user(
+        #     email=email,
+        #     name=name,
+        #     password=password,
+        #     user_type="business"  
+        # )
       
        
         business = Business.objects.create(
-            user=user,
+            email = email,
+            name = name,
+            password = password,
+            user_type = "business",
             business_name=validated_data.pop('business_name'),
             phone=validated_data.pop('phone'),
             store_address=validated_data.pop('store_address'),
-            business_type=validated_data.pop('business_type')
+            business_type=validated_data.pop('business_type'),
+            store_latitude = validated_data.pop('store_latitude'),
+            store_longitude = validated_data.pop('store_longitude')
         )
         
         return business
+    
+class BusinessLocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Business
+        fields = ['store_latitude', 'store_longitude']
+
