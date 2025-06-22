@@ -5,6 +5,7 @@ import "leaflet/dist/leaflet.css";
 import { Link } from "react-router-dom";
 import { BusinessReg } from "../api";
 import { fetchAddressFromLatLng } from "../api";
+import { LatLngBounds } from "leaflet";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
@@ -49,8 +50,8 @@ function BusinessAcc() {
 
 	const handleMapClick = async (lat, lng) => {
 		setStoreLatLng({
-  	lat: parseFloat(lat.toFixed(6)),
-  	lng: parseFloat(lng.toFixed(6)),
+			lat: parseFloat(lat.toFixed(6)),
+			lng: parseFloat(lng.toFixed(6)),
 		});
 		setIsMapLoading(true);
 		try {
@@ -63,7 +64,21 @@ function BusinessAcc() {
 			setIsMapLoading(false);
 		}
 	};
+	const kathmanduBounds = new LatLngBounds(
+		[27.58, 85.15], // SW corner
+		[27.85, 85.45] // NE corner
+	);
 
+	function KathmanduBounds() {
+		const map = useMap();
+
+		useEffect(() => {
+			map.fitBounds(kathmanduBounds);
+			map.setMaxBounds(kathmanduBounds);
+		}, [map]);
+
+		return null;
+	}
 	const HandleSubmit = async (e) => {
 		e.preventDefault();
 		if (password !== password2) return setError("Passwords do not match");
@@ -109,132 +124,148 @@ function BusinessAcc() {
 	};
 
 	return (
-<>
-<Navbar/>
+		<>
+			<Navbar />
 
-		<div className="min-h-screen bg-gray-100 py-8 px-4">
-			<div className="max-w-6xl mx-auto">
-				<h1 className="text-3xl font-bold text-center text-[#287588] mb-8">
-					Business Registration
-				</h1>
+			<div className="min-h-screen bg-gray-100 py-8 px-4">
+				<div className="max-w-6xl mx-auto">
+					<h1 className="text-3xl font-bold text-center text-[#287588] mb-8">
+						Business Registration
+					</h1>
 
-				<div className="flex flex-col lg:flex-row gap-8">
-					{/* Form Section */}
-					<div className="bg-white p-6 rounded-lg shadow-md flex-1">
-						<form onSubmit={HandleSubmit} className="space-y-4">
-							{/* Email, Name, Phone, etc. */}
-							<input
-								value={email}
-								onChange={(e) => setEmail(e.target.value)}
-								placeholder="Email"
-								required
-className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#287588]"							/>
-							<input
-								value={name}
-								onChange={(e) => setName(e.target.value)}
-								placeholder="Full Name"
-								required
-className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#287588]"							
-/>
-							<input
-								value={phone}
-								onChange={(e) => setPhone(e.target.value)}
-								placeholder="Phone"
-								required
-className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#287588]"							
-							/>
-							<input
-								value={business_name}
-								onChange={(e) => setBusinessName(e.target.value)}
-								placeholder="Business Name"
-								required
-								className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 runde focus:ring-[#287588]"
-							/>
-							<select
-								value={business_type}
-								onChange={(e) => setBusinessType(e.target.value)}
-								required
- className="w-full px-3 py-2 text-gray-500 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#287588]"				>
-								<option value="" className="">Select Business Type</option>
-								<option value="restaurant">Restaurant</option>
-								<option value="bakery">Bakery</option>
-								<option value="convenience_store">Convenience Store</option>
-							</select>
-							<textarea
-								value={store_address}
-								onChange={(e) => setStoreAddress(e.target.value)}
-								required
-								className="w-full text-gray-500 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#287588]"
-								placeholder="Store Address (click map)"
-							></textarea>
-							{storeLatLng.lat && (
-								<p className="text-xs text-gray-600">
-									Lat: {storeLatLng.lat.toFixed(6)}, Lng:{" "}
-									{storeLatLng.lng.toFixed(6)}
-								</p>
-							)}
-							<input
-								type="password"
-								value={password}
-								onChange={(e) => setPassword(e.target.value)}
-								placeholder="Password"
-								required
-								className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#287588]"
-							/>
-							<input
-								type="password"
-								value={password2}
-								onChange={(e) => setPassword2(e.target.value)}
-								placeholder="Confirm Password"
-								required
-								className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#287588]"
-							/>
-							<button
-								disabled={!storeLatLng.lat || isMapLoading}
-  className="w-full bg-[#287588] hover:bg-[#1b5968] text-white font-bold py-3 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1b5968] disabled:opacity-50"							>
-								{isMapLoading ? "Loading..." : "Register"}
-							</button>
-							{error && <p className="text-red-500 text-sm">{error}</p>}
-							<p className="text-sm text-center">
-								Already have an account?{" "}
-								<Link to="/login" className="text-[#287588] hover:underline font-medium">
-									Login
-								</Link>
-							</p>
-						</form>
-					</div>
-
-					{/* Map Section */}
-					<div className="bg-white p-4 rounded-lg shadow-md flex-1">
-						<h2 className="text-lg font-semibold mb-4">Select Location</h2>
-						<div className="h-[400px] relative">
-							{isMapLoading && (
-								<div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10">
-									Loading address...
-								</div>
-							)}
-							<MapContainer
-								center={[27.7172, 85.324]}
-								zoom={13}
-								style={{ height: "100%", width: "100%", borderRadius: "8px" }}
-							>
-								<TileLayer
-									url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-									attribution="&copy; OpenStreetMap contributors"
+					<div className="flex flex-col lg:flex-row gap-8">
+						{/* Form Section */}
+						<div className="bg-white p-6 rounded-lg shadow-md flex-1">
+							<form onSubmit={HandleSubmit} className="space-y-4">
+								{/* Email, Name, Phone, etc. */}
+								<input
+									value={email}
+									onChange={(e) => setEmail(e.target.value)}
+									placeholder="Email"
+									required
+									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#287588]"
 								/>
-								<MapEventHandler onMapClick={handleMapClick} />
+								<input
+									value={name}
+									onChange={(e) => setName(e.target.value)}
+									placeholder="Full Name"
+									required
+									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#287588]"
+								/>
+								<input
+									value={phone}
+									onChange={(e) => setPhone(e.target.value)}
+									placeholder="Phone"
+									required
+									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#287588]"
+								/>
+								<input
+									value={business_name}
+									onChange={(e) => setBusinessName(e.target.value)}
+									placeholder="Business Name"
+									required
+									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 runde focus:ring-[#287588]"
+								/>
+								<select
+									value={business_type}
+									onChange={(e) => setBusinessType(e.target.value)}
+									required
+									className="w-full px-3 py-2 text-gray-500 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#287588]"
+								>
+									<option value="" className="">
+										Select Business Type
+									</option>
+									<option value="restaurant">Restaurant</option>
+									<option value="bakery">Bakery</option>
+									<option value="convenience_store">Convenience Store</option>
+								</select>
+								<textarea
+									value={store_address}
+									onChange={(e) => setStoreAddress(e.target.value)}
+									required
+									className="w-full text-gray-500 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#287588]"
+									placeholder="Store Address (click map)"
+								></textarea>
 								{storeLatLng.lat && (
-									<Marker position={[storeLatLng.lat, storeLatLng.lng]}>
-										<Popup>Business Location</Popup>
-									</Marker>
+									<p className="text-xs text-gray-600">
+										Lat: {storeLatLng.lat.toFixed(6)}, Lng:{" "}
+										{storeLatLng.lng.toFixed(6)}
+									</p>
 								)}
-							</MapContainer>
+								<input
+									type="password"
+									value={password}
+									onChange={(e) => setPassword(e.target.value)}
+									placeholder="Password"
+									required
+									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#287588]"
+								/>
+								<input
+									type="password"
+									value={password2}
+									onChange={(e) => setPassword2(e.target.value)}
+									placeholder="Confirm Password"
+									required
+									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#287588]"
+								/>
+								<button
+									disabled={!storeLatLng.lat || isMapLoading}
+									className="w-full bg-[#287588] hover:bg-[#1b5968] text-white font-bold py-3 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1b5968] disabled:opacity-50"
+								>
+									{isMapLoading ? "Loading..." : "Register"}
+								</button>
+								{error && <p className="text-red-500 text-sm">{error}</p>}
+								<p className="text-sm text-center">
+									Already have an account?{" "}
+									<Link
+										to="/login"
+										className="text-[#287588] hover:underline font-medium"
+									>
+										Login
+									</Link>
+								</p>
+							</form>
+						</div>
+
+						{/* Map Section */}
+						<div className="bg-white p-4 rounded-lg shadow-md flex-1">
+							<h2 className="text-lg font-semibold mb-4">Select Location</h2>
+							<div className="h-[400px] relative">
+								{isMapLoading && (
+									<div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10">
+										Loading address...
+									</div>
+								)}
+								<MapContainer
+									center={[27.7172, 85.324]} // Central Kathmandu
+									zoom={13}
+									style={{ height: "100%", width: "100%", borderRadius: "8px" }}
+									minZoom={11} // Prevent zooming out beyond valley view
+									maxBounds={kathmanduBounds} // Restrict panning
+								>
+									<TileLayer
+										url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+										attribution="&copy; OpenStreetMap contributors"
+										noWrap={true} // Prevent world wrapping
+									/>
+
+									{/* Add the bounds component */}
+									<KathmanduBounds />
+
+									{/* Keep your existing components */}
+									<MapEventHandler onMapClick={handleMapClick} />
+									{storeLatLng.lat && (
+										<Marker position={[storeLatLng.lat, storeLatLng.lng]}>
+											<Popup>Business Location</Popup>
+										</Marker>
+									)}
+								</MapContainer>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-								</>
+		</>
 	);
 }
 

@@ -29,6 +29,7 @@ export const login = async (postData) => {
 			},
 		});
 		return response.data;
+		localStorage.setItem("token",resp)
 	} catch (error) {
 		console.log("Failed to login:", error.response?.data || error.message);
 		throw error;

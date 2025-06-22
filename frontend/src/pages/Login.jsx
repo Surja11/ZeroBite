@@ -20,11 +20,17 @@ function Login() {
       
     }
     }
+
+
+
+    
   return (
 <>
 <Navbar/>
-<div className="flex justify-center items-center min-h-screen bg-gray-100 py-12">
-      <div className="bg-gray-100 p-8 rounded-lg shadow-md w-full max-w-[600px]">
+<div className="flex justify-center items-center min-h-screen bg-gray-100 py-12 pr-0">
+
+
+      <div className="bg-gray-100 p- rounded-lg shadow-md w-full max-w-[600px]">
         <h2 className="text-3xl font-semi-bold mb-6 text-center text-[#287588]">
          Login
         </h2>{error && (
@@ -83,6 +89,8 @@ function Login() {
           </form>
         </div>
       </div>
+
+
     </div>
                   </>
   )
