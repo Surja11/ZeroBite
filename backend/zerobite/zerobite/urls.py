@@ -16,11 +16,26 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
+from django.conf import settings
+from django.conf.urls.static import static
+from rest_framework.routers import DefaultRouter
+from product import views
+
+#Creating Router Object
+
+router = DefaultRouter()
+
+#Registering ViewSet with Router
+
+router.register('productapi', views.ProductViewSet,basename = 'product')
+
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('account.urls')),
     path('business/', include('business.urls')),
     path('customer/',include('customer.urls') ),
-    path('product/', include('product.urls'))
-]
+    path('product/', include('product.urls')),
+    path('add/',include(router.urls)),
+]+static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
