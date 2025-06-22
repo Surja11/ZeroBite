@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
 import { register } from "../api";
 function Register() {
 	const [first_name, setFirst] = useState("");
@@ -13,6 +14,7 @@ function Register() {
 	const navigate = useNavigate();
 	const HandleSubmit = async (e) => {
 		e.preventDefault();
+		setError("")
 		const PostData = {
 			first_name,
 			last_name,
@@ -30,6 +32,7 @@ function Register() {
 			setEmail("");
 			setPassword("");
 			setPhone("");
+			setAddress("")
 			setConPassword("");
 			navigate("/");
 		} catch (error) {
@@ -56,6 +59,8 @@ function Register() {
 	};
 
 	return (
+<>
+		<Navbar/>
 		<div className="flex justify-center items-center min-h-screen bg-gray-100 py-12">
 			<div className="bg-gray-100 p-8 rounded-lg shadow-md w-full max-w-[600px]">
 				<h2 className="text-3xl font-semi-bold mb-6 text-center text-[#287588]">
@@ -68,7 +73,6 @@ function Register() {
 
 				<div className="">
 					<form
-						action="/register"
 						method="POST"
 						onSubmit={HandleSubmit}
 						className=" px-4 py-3 rounded mb-4 flex flex-col space-y-6"
@@ -79,23 +83,25 @@ function Register() {
 								value={first_name}
 								onChange={(e) => setFirst(e.target.value)}
 								placeholder="First name"
-								className={`required shadow appearance-none border bg-gray-50 italic border-gray-400  rounded-2xl w-full py-2 placeholder:text-[13px]  px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
+
+								required
+								className={` shadow appearance-none border bg-gray-50 italic border-gray-400  rounded-2xl w-full py-2 placeholder:text-[13px]  px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
 							/>
 						</div>
 						<div>
 							<input
 								type="text"
 								value={last_name}
-								onChange={(e) => setLast(e.target.value)}
+								onChange={(e) => setLast(e.target.value)} required
 								placeholder="Last name"
 								className={`required shadow appearance-none border bg-gray-50 italic border-gray-400  rounded-2xl w-full py-2 placeholder:text-[13px]  px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
-							/>
+								/>
 						</div>
 						<div>
 							<input
 								value={email}
 								onChange={(e) => setEmail(e.target.value)}
-								type="email"
+								type="email" required
 								placeholder="Email"
 								className={`required shadow appearance-none border bg-gray-50 italic border-gray-400  rounded-2xl w-full py-2 placeholder:text-[13px]  px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
 							/>
@@ -104,8 +110,8 @@ function Register() {
 							<input
 								value={phone}
 								onChange={(e) => setPhone(e.target.value)}
-								type="tel"
-								placeholder="Phone number"
+								type="tel" required
+								placeholder=" Phone number"
 								className={`required shadow appearance-none border bg-gray-50 italic border-gray-400  rounded-2xl w-full py-2 placeholder:text-[13px]  px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
 							/>
 						</div>
@@ -113,7 +119,7 @@ function Register() {
 							<textarea
 								value={address}
 								onChange={(e) => setAddress(e.target.value)}
-								name="address"
+								name="address" required
 								type="text"
 								placeholder="Address"
 								className={`required shadow appearance-none border bg-gray-50 italic border-gray-400  rounded-2xl w-full py-2 placeholder:text-[13px]  px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
@@ -122,7 +128,7 @@ function Register() {
 						<div>
 							<input
 								value={password}
-								onChange={(e) => setPassword(e.target.value)}
+								onChange={(e) => setPassword(e.target.value)} required
 								type="password"
 								placeholder="Password"
 								className={`required shadow appearance-none border bg-gray-50  italic border-gray-400  rounded-2xl w-full py-2 placeholder:text-[13px]  px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
@@ -130,7 +136,7 @@ function Register() {
 						</div>
 						<div>
 							<input
-								value={password2}
+								value={password2} required
 								onChange={(e) => setConPassword(e.target.value)}
 								type="password"
 								placeholder="Confirm Password"
@@ -160,6 +166,7 @@ function Register() {
 				</div>
 			</div>
 		</div>
+								</>
 	);
 }
 
