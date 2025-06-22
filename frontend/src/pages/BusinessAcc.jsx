@@ -48,7 +48,10 @@ function BusinessAcc() {
 	const [isMapLoading, setIsMapLoading] = useState(false);
 
 	const handleMapClick = async (lat, lng) => {
-		setStoreLatLng({ lat, lng });
+		setStoreLatLng({
+  	lat: parseFloat(lat.toFixed(6)),
+  	lng: parseFloat(lng.toFixed(6)),
+		});
 		setIsMapLoading(true);
 		try {
 			const address = await fetchAddressFromLatLng(lat, lng);
@@ -76,8 +79,8 @@ function BusinessAcc() {
 			store_address,
 			business_name,
 			business_type,
-			latitude: storeLatLng.lat,
-			longitude: storeLatLng.lng,
+			store_latitude: storeLatLng.lat,
+			store_longitude: storeLatLng.lng,
 		};
 
 		try {
@@ -154,8 +157,8 @@ className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none
  className="w-full px-3 py-2 text-gray-500 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#287588]"				>
 								<option value="" className="">Select Business Type</option>
 								<option value="restaurant">Restaurant</option>
-								<option value="grocery">Grocery</option>
-								<option value="pharmacy">Pharmacy</option>
+								<option value="bakery">Bakery</option>
+								<option value="convenience_store">Convenience Store</option>
 							</select>
 							<textarea
 								value={store_address}

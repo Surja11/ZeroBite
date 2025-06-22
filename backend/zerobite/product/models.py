@@ -1,5 +1,6 @@
 from django.db import models
 from business.models import *
+from customer.models import *
 
 # Create your models here.
 class Category(models.Model):
@@ -25,9 +26,18 @@ class Product(models.Model):
   image = models.ImageField(upload_to='products/', blank = True, null = True)
   manufactured_date = models.DateField()
   expiry_date = models.DateField()
+  stock = models.IntegerField()
   available = models.BooleanField(default = True)
 
   def __str__(self):
     return self.name
 
 
+class Cart(models.Model):
+  customer = models.ForeignKey(Customer, on_delete = models.CASCADE)
+  product = models.ForeignKey(Product, on_delete = models.CASCADE)
+  business = models.ForeignKey(Business, on_delete=models.CASCADE)
+  quantity = models.PositiveIntegerField(default = 1)
+
+
+# class Order(models.Model):
