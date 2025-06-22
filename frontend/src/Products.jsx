@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import Header from './components/Header';
+import { useLocation } from 'react-router-dom';
 import Card from './components/ProductCard';
 import Filters from './components/FilterBar';
 import './Products.css';
-import { Link } from 'react-router-dom';
+
 
 const API_BASE_URL = 'http://localhost:8000/api'; // change this to your backend URL
 
 const ProductPage = () => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const searchFromQuery = queryParams.get('search') || '';
+
   const [products, setProducts] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(searchFromQuery);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [displayOnEnter, setDisplayOnEnter] = useState(false);
@@ -27,9 +31,10 @@ const ProductPage = () => {
       .then(res => res.json())
       .then(data => {
         setProducts(data);
-        setFilteredProducts(data.slice(0, 8));
+        setFilteredProducts(data);
       })
-
+      .catch(console.error);
+      
     // fetch(`${API_BASE_URL}/products/`)
     //   .then((res) => {
     //     if (!res.ok) throw new Error('Failed to fetch products');
@@ -44,16 +49,14 @@ const ProductPage = () => {
   }, []);
 
  useEffect(() => {
-    if (
-      !displayOnEnter &&
-      selectedCategory === 'All' &&
-      !searchTerm &&
-      !filters.location &&
-      !filters.expiry
-    )
-      return;
+    if (searchFromQuery) {
+      setSearchTerm(searchFromQuery);
+    }
+  }, [searchFromQuery]);
 
-    const filtered = products.filter(product => {
+  // Filter logic
+  useEffect(() => {
+    let filtered = products.filter(product => {
       const matchesSearch =
         product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         product.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -94,34 +97,16 @@ const ProductPage = () => {
     });
 
     setFilteredProducts(filtered);
-  }, [searchTerm, selectedCategory, displayOnEnter, filters, products]);
-
-  const handleSearchEnter = (event) => {
-    if (event.key === 'Enter') {
-      setDisplayOnEnter(true);
-    }
-  };
-
-  const applyFilters = () => {
-    setDisplayOnEnter(true);
-  };
+  }, [searchTerm, selectedCategory, filters, products]);
 
   return (
     <div>
-      <Header
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        onEnter={handleSearchEnter}
-      />
-
-      <div className="options" style={{ marginTop: '1rem', marginBottom: '1rem' }}>
+      {/* Category buttons */}
+      <div className="options" style={{ margin: '1rem 0' }}>
         {categories.map(category => (
           <button
             key={category}
-            onClick={() => {
-              setSelectedCategory(category);
-              setDisplayOnEnter(true);
-            }}
+            onClick={() => setSelectedCategory(category)}
             style={{
               backgroundColor: selectedCategory === category ? '#7bb400' : '',
               color: selectedCategory === category ? 'white' : '',
@@ -138,20 +123,16 @@ const ProductPage = () => {
       </div>
 
       <div className="main-content" style={{ display: 'flex', gap: '20px' }}>
+        {/* Filters sidebar */}
         <div className="filters-wrapper">
-          <Filters filters={filters} setFilters={setFilters} onApply={applyFilters} />
+          <Filters filters={filters} setFilters={setFilters} />
         </div>
 
+        {/* Product results */}
         <div className="products-container">
           {filteredProducts.length > 0 ? (
-            filteredProducts.map((product) => (
-              <Link
-                key={product.id}
-                to={`/product/${product.id}`}
-                style={{ textDecoration: 'none', color: 'inherit' }}
-              >
-                <Card product={product} />
-              </Link>
+            filteredProducts.map(product => (
+              <Card key={product.id} product={product} />
             ))
           ) : (
             <p>No products found.</p>

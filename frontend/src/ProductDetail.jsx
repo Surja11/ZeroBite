@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import Header from './components/Header';
+
 import Card from './components/ProductCard';
 import './ProductDetail.css';
-
+import Toast from './components/Toast';
 // Import your cart hook (adjust path accordingly)
 import { useCart } from './context/CartContext'; // <-- NEW
 
@@ -15,25 +15,17 @@ const ProductDetail = () => {
   const [recommended, setRecommended] = useState([]);
 
   const { addToCart } = useCart(); // <-- NEW
-
+  const [toastMsg, setToastMsg] = useState('');
   useEffect(() => {
     fetch('/products.json')
-    .then(res => res.json())
-    .then(data => {
-      const found = data.find(p => p.id.toString() === id);
-
-      if (!found) {
-        console.error("Product not found with id:", id);
-        setProduct(null);
-        return;
-      }
-
-      setProduct(found);
-
-      const recs = data.filter(p => p.category === found.category && p.id.toString() !== id);
-      setRecommended(recs.slice(0, 3));
-    })
-    .catch(err => console.error("Error loading product detail:", err));
+      .then(res => res.json())
+      .then(data => {
+        const found = data.find(p => p.id === Number(id) || p.id === id.toString());
+        setProduct(found);
+        const recs = data.filter(p => p.category === found.category && p.id !== found.id);
+        setRecommended(recs.slice(0, 3));
+      })
+      .catch(console.error);
     /*
      // ===== FETCH REAL DATA =====
     // 1. Fetch main product
@@ -62,13 +54,17 @@ const ProductDetail = () => {
   // Handler to add product to cart and show success message
   const handleAddToCart = (prod) => {
     addToCart(prod);
-    // You can add your success message logic here if you want
-    alert(`Added ${prod.name} to cart!`); // Simple alert, replace with toast or other UI
+    setToastMsg('Added to cart!');
+    setTimeout(() => setToastMsg(''), 3000);
   };
 
-   return (
+  return (
     <div>
-      <Header />
+
+
+      {/* Toast message for feedback */}
+      {toastMsg && <Toast message={toastMsg} />}
+
       <div className="product-detail">
         <div className="product-header">
           <img src={product.image_url} alt={product.name} />
@@ -79,14 +75,11 @@ const ProductDetail = () => {
             <p><strong>Price:</strong> Rs. {product.price}</p>
             <p>{product.description}</p>
             <div className="actions">
-            <button
-              className="add-to-cart"
-              onClick={() => addToCart(product)}
-            >
-              Add to Cart
-            </button>
-            <button className="buy-now">Buy Now</button>
-          </div>
+              <button className="add-to-cart" onClick={() => handleAddToCart(product)}>
+                Add to Cart
+              </button>
+              <button className="buy-now">Buy Now</button>
+            </div>
           </div>
         </div>
 

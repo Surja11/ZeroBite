@@ -4,23 +4,20 @@ import { Link } from 'react-router-dom';
 import './ProductCard.css';
 import timer from '../assets/Zerobite images/expiry.png';
 import cartIcon from '../assets/Zerobite images/cartIcon.svg';
-
-// 🆕 Import cart context and toast
 import { useCart } from '../context/CartContext';
 import Toast from './Toast';
 
 const Card = ({ product }) => {
   const { price, name, location, image_url, expiry_date, id } = product;
-  const { addToCart } = useCart(); // 🆕 Hook from context
+  const { addToCart } = useCart();
 
-  const [toastMsg, setToastMsg] = useState(''); // 🆕 Toast message
+  const [toastMsg, setToastMsg] = useState('');
 
-  // 🆕 Add-to-cart handler
   const handleAddToCart = (e) => {
-    e.preventDefault(); // 🆕 Prevent navigation
-    addToCart(product); // 🆕 Add product
-    setToastMsg('Added to cart!'); // 🆕 Show toast
-    setTimeout(() => setToastMsg(''), 3000); // 🆕 Hide toast after 3 sec
+    e.preventDefault(); // Prevent Link click
+    addToCart(product);
+    setToastMsg('Added to cart!');
+    setTimeout(() => setToastMsg(''), 3000);
   };
 
   const expiryDateObj = new Date(expiry_date);
@@ -41,7 +38,7 @@ const Card = ({ product }) => {
 
   return (
     <>
-      {toastMsg && <Toast message={toastMsg} />} {/* 🆕 Toast */}
+      {toastMsg && <Toast message={toastMsg} />}
       <Link to={`/product/${id}`} className="card-link" style={{ textDecoration: 'none', color: 'inherit' }}>
         <div className="card-container">
           <div className="img-container">
@@ -52,7 +49,6 @@ const Card = ({ product }) => {
             <h1>{name}</h1>
             <div className="btn">
               <button className="cart-button" style={{ backgroundColor: "#AEB18A" }} onClick={handleAddToCart}>
-                {/* 🆕 Added onClick */}
                 <img className="small-cart" src={cartIcon} alt="cart icon" />
               </button>
               <button className="expiry-button">

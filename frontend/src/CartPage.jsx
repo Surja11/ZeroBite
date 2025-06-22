@@ -11,7 +11,7 @@ const CartPage = () => {
 
   return (
     <>
-      <Header />
+    
       <div className="cart-page">
         <h1 className='text-center mb-5' ><strong>Your Cart</strong></h1>
 
