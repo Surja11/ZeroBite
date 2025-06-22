@@ -42,21 +42,21 @@
 }
 
 .checkout-btn {
-  background-color: #28a745;
+  background-color: #7bb400;
   color: white;
   padding: 12px 25px;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
 }
 
 .checkout-btn:hover {
-  background-color: #218838;
+  background-color: #628f02;
 }
 
 .remove-btn {
   margin-top: 10px;
-  background-color: #dc3545;
+  background-color: #e84c5c;
   color: white;
   border: none;
   padding: 8px 12px;

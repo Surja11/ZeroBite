@@ -6,6 +6,7 @@ import Header from './components/Header';
 import ProductPage from './Products';
 import ProductDetail from './ProductDetail';
 import CartPage from './CartPage';
+import CheckoutPage from './CheckoutPage';
 
 function AppRouter() {
   const [searchTerm, setSearchTerm] = useState(''); // 🛠️ Added: manage search globally
@@ -28,6 +29,8 @@ function AppRouter() {
         <Route path="/" element={<ProductPage />} />
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+
       </Routes>
     </>
   );

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link,useNavigate  } from 'react-router-dom';
 
 import Card from './components/ProductCard';
 import './ProductDetail.css';
@@ -11,6 +11,7 @@ const API_BASE_URL = 'http://localhost:8000/api';
 
 const ProductDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [recommended, setRecommended] = useState([]);
 
@@ -58,6 +59,11 @@ const ProductDetail = () => {
     setTimeout(() => setToastMsg(''), 3000);
   };
 
+  const handleBuyNow = (prod) => {
+    addToCart(prod);
+    navigate('/cart');  // redirect to checkout page
+  };
+
   return (
     <div>
 
@@ -78,7 +84,7 @@ const ProductDetail = () => {
               <button className="add-to-cart" onClick={() => handleAddToCart(product)}>
                 Add to Cart
               </button>
-              <button className="buy-now">Buy Now</button>
+              <button className="buy-now" onClick={() => handleBuyNow(product)}>Buy Now</button>
             </div>
           </div>
         </div>
