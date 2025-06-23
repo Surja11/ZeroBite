@@ -5,14 +5,13 @@ from .models import Business
 
 class BusinessRegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(write_only=True)
-    name = serializers.CharField(write_only=True)
     password = serializers.CharField(write_only=True, validators=[validate_password])
     password2 = serializers.CharField(write_only=True)
     
     class Meta:
         model = Business
         fields = [ 'id',
-            'email', 'name', 'password', 'password2',
+            'email', 'password', 'password2',
             'business_name', 'phone', 'store_address', 'business_type','store_latitude','store_longitude'
         ]
     
@@ -24,7 +23,7 @@ class BusinessRegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
        
         email = validated_data.pop('email')
-        name = validated_data.pop('name')
+        acc_name = validated_data.pop('business_name')
         password = validated_data.pop('password')
         validated_data.pop('password2') 
         
@@ -37,12 +36,12 @@ class BusinessRegisterSerializer(serializers.ModelSerializer):
         # )
       
        
-        business = Business.objects.create(
+        business = Business.objects.create_user(
             email = email,
-            name = name,
+            name= acc_name,
             password = password,
             user_type = "business",
-            business_name=validated_data.pop('business_name'),
+            business_name=acc_name,
             phone=validated_data.pop('phone'),
             store_address=validated_data.pop('store_address'),
             business_type=validated_data.pop('business_type'),
