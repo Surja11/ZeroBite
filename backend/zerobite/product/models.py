@@ -29,7 +29,7 @@ class Product(models.Model):
   stock = models.IntegerField()
   available = models.BooleanField(default = True)
   brand = models.CharField(max_length=50, blank=True)
-  tags = models.ManyToManyField('ProductTag', blank=True)
+  # tags = models.ManyToManyField('ProductTag', blank=True)
   view_count = models.PositiveIntegerField(default=0)
   def __str__(self):
     return self.name
