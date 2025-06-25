@@ -1,7 +1,7 @@
 // src/CartPage.jsx
 import React from 'react';
-import { useCart } from './context/CartContext';
-import Header from './components/Header';
+import { useCart } from '../context/CartContext';
+import Header from '../components/Header';
 import './CartPage.css';
 import { useNavigate } from 'react-router-dom';
 const CartPage = () => {

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import Card from './components/ProductCard';
-import Filters from './components/FilterBar';
+import Card from '../components/ProductCard';
+import FilterBar from '../components/FilterBar';
 import './Products.css';
-
+import Header from '../components/Header';
 // const API_BASE_URL = 'http://localhost:8000/api'; // Uncomment if you want to fetch from API
 
 const ProductPage = () => {
@@ -101,6 +101,11 @@ const ProductPage = () => {
 
   return (
     <div>
+      <Header
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        onEnter={onSearchEnter}
+      />
       {/* Category buttons */}
       <div className="options" style={{ margin: '1rem 0' }}>
         {categories.map(category => (

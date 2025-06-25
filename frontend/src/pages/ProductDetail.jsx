@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link,useNavigate  } from 'react-router-dom';
 
-import Card from './components/ProductCard';
+import Card from '../components/ProductCard';
 import './ProductDetail.css';
-import Toast from './components/Toast';
+import Toast from '../components/Toast';
 // Import your cart hook (adjust path accordingly)
-import { useCart } from './context/CartContext'; // <-- NEW
+import { useCart } from '../context/CartContext'; // <-- NEW
 
 const API_BASE_URL = 'http://localhost:8000/api';
 

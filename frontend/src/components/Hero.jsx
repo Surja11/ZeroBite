@@ -3,7 +3,9 @@ import main from "/images/main.jpg";
 
 function Hero() {
 const [location,setLocation] = useState("")
-
+    const HandleLocation = (e) => {
+    setLocation(e.target.value);
+  };
 
   return (
     <div className="w-full">

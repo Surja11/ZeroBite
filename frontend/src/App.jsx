@@ -8,10 +8,10 @@ import Login from './pages/Login';              // from first version
 import Register from './pages/Register';        // from first version
 import BusinessAcc from './pages/BusinessAcc';  // from first version
 
-import ProductPage from './Products';            // from second version
-import ProductDetail from './ProductDetail';    // from second version
-import CartPage from './CartPage';               // from second version
-import CheckoutPage from './CheckoutPage';      // from second version
+import ProductPage from './pages/Products';         // from second version
+import ProductDetail from './pages/ProductDetail';  // from second version
+import CartPage from './pages/CartPage';              // from second version
+import CheckoutPage from './pages/CheckoutPage';    // from second version
 
 function AppRouter() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -25,11 +25,7 @@ function AppRouter() {
 
   return (
     <>
-      <Header
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        onEnter={onSearchEnter}
-      />
+      
       <Routes>
         {/* Routes from first version */}
         <Route path="/" element={<Home />} />
