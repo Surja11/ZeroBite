@@ -1,16 +1,37 @@
 import React, { useState } from 'react';
 import main from "/images/main.jpg";
+import { Location } from '../api';
+import { useNavigate } from 'react-router-dom';
 
 function Hero() {
-const [location,setLocation] = useState("")
-    const HandleLocation = (e) => {
-    setLocation(e.target.value);
+  const navigate = useNavigate();
+  const [location, setLocation] = useState("");
+
+  const HandleLocation = () => {
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        try {
+          const products = await Location(lat, lon);
+          console.log("Received products:", products);
+          alert("Location data sent successfully!");
+          setLocation("");
+          navigate('/');
+        } catch (err) {
+          console.error("Error fetching products:", err);
+        }
+      },
+      (err) => {
+        console.error("Geolocation error:", err);
+        alert("Location access denied or unavailable");
+      }
+    );
   };
 
   return (
     <div className="w-full">
       <div className="flex flex-col md:flex-row items-center justify-between max-w-7xl mx-auto px-6 pt-0 md:pt-12 gap-10">
-        
         {/* Left Side: Text */}
         <div className="md:w-1/2 text-center md:text-left">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -22,11 +43,16 @@ const [location,setLocation] = useState("")
 
           <div className="flex items-center bg-white rounded-full px-4 py-2 w-full max-w-md mx-auto md:mx-0 shadow-lg">
             <input
-              type="text" onChange={HandleLocation}
+              type="text"
+              onChange={(e) => setLocation(e.target.value)}
               placeholder="Enter location"
+              value={location}
               className="flex-grow bg-transparent outline-none px-2 text-gray-800"
             />
-            <button className="bg-green-600 text-white px-4 py-1 rounded-full hover:bg-green-700 transition">
+            <button
+              className="bg-green-600 text-white px-4 py-1 rounded-full hover:bg-green-700 transition"
+              onClick={HandleLocation}
+            >
               Search
             </button>
           </div>

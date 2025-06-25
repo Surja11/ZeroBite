@@ -3,15 +3,16 @@ import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-route
 import { CartProvider } from './context/CartContext';
 
 import Header from './components/Header';
-import Home from './pages/Home';                // from first version
-import Login from './pages/Login';              // from first version
-import Register from './pages/Register';        // from first version
-import BusinessAcc from './pages/BusinessAcc';  // from first version
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import BusinessAcc from './pages/BusinessAcc';
+import Business from './pages/Business';
 
-import ProductPage from './pages/Products';         // from second version
-import ProductDetail from './pages/ProductDetail';  // from second version
-import CartPage from './pages/CartPage';              // from second version
-import CheckoutPage from './pages/CheckoutPage';    // from second version
+import ProductPage from './pages/Products';
+import ProductDetail from './pages/ProductDetail';
+import CartPage from './pages/CartPage';
+import CheckoutPage from './pages/CheckoutPage';
 
 function AppRouter() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -24,22 +25,17 @@ function AppRouter() {
   };
 
   return (
-    <>
-      
-      <Routes>
-        {/* Routes from first version */}
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/businessacc" element={<BusinessAcc />} />
-
-        {/* Routes from second version */}
-        <Route path="/products" element={<ProductPage />} />
-        <Route path="/product/:id" element={<ProductDetail />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
-      </Routes>
-    </>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/businessacc" element={<BusinessAcc />} />
+      <Route path="/business" element={<Business />} />
+      <Route path="/products" element={<ProductPage />} />
+      <Route path="/product/:id" element={<ProductDetail />} />
+      <Route path="/cart" element={<CartPage />} />
+      <Route path="/checkout" element={<CheckoutPage />} />
+    </Routes>
   );
 }
 

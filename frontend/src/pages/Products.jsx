@@ -4,7 +4,6 @@ import Card from '../components/ProductCard';
 import FilterBar from '../components/FilterBar';
 import './Products.css';
 import Header from '../components/Header';
-// const API_BASE_URL = 'http://localhost:8000/api'; // Uncomment if you want to fetch from API
 
 const ProductPage = () => {
   const location = useLocation();
@@ -25,7 +24,6 @@ const ProductPage = () => {
   const categories = ['All', 'Bakery', 'Packaged Food', 'Restaurant Meal'];
 
   useEffect(() => {
-    // Fetch from local JSON
     fetch('/products.json')
       .then(res => res.json())
       .then(data => {
@@ -33,20 +31,6 @@ const ProductPage = () => {
         setFilteredProducts(data);
       })
       .catch(console.error);
-
-    // OR fetch from backend API
-    /*
-    fetch(`${API_BASE_URL}/products/`)
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to fetch products');
-        return res.json();
-      })
-      .then(data => {
-        setProducts(data);
-        setFilteredProducts(data);
-      })
-      .catch(err => console.error(err));
-    */
   }, []);
 
   useEffect(() => {
@@ -104,9 +88,8 @@ const ProductPage = () => {
       <Header
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
-        onEnter={onSearchEnter}
       />
-      {/* Category buttons */}
+
       <div className="options" style={{ margin: '1rem 0' }}>
         {categories.map(category => (
           <button
@@ -128,12 +111,10 @@ const ProductPage = () => {
       </div>
 
       <div className="main-content" style={{ display: 'flex', gap: '20px' }}>
-        {/* Filters sidebar */}
         <div className="filters-wrapper">
-          <Filters filters={filters} setFilters={setFilters} />
+          <FilterBar filters={filters} setFilters={setFilters} />
         </div>
 
-        {/* Product results */}
         <div className="products-container">
           {filteredProducts.length > 0 ? (
             filteredProducts.map(product => (

@@ -2,23 +2,47 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { login } from '../api';
 import Navbar from '../components/Navbar';
+import { useNavigate } from 'react-router-dom';
 function Login() {
 
   const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error,setError]= useState(null)
+      const [isLoading, setIsLoading] = useState(false);
+
+    const naviagte = useNavigate()
     const HandleSubmit=async (e)=>{
       	e.preventDefault();
-        setError("")
+            setIsLoading(true);
+        setError(null)
+        
       const postData ={
         email, 
         password,
       }
       try{
-        await login(postData);
+       const user = await login(postData);
+       
+       alert("login sucress")
+       console.log('LOGIN SUCESS')
+
+       if(user.user_type === "business"){
+
+         naviagte('/business')
+        }else if(user.user_type==="customer"){
+         naviagte('/products')
+
+       }
             }catch(error){
-      
-    }
+console.error('Login failed:', error);
+      setError(
+        error.response?.data?.detail || 
+        error.response?.data?.message || 
+        'Login failed. Please try again.'
+      );
+    } finally {
+      setIsLoading(false);
+    }    
     }
 
 
