@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import Header from "../components/Header"
-import Card from '/components/ProductCard';
+import { useLocation } from 'react-router-dom';
+import Card from './components/ProductCard';
 import Filters from './components/FilterBar';
-import products from '../public/products.json'; 
-import '../components/styles/Products.css'
+import './Products.css';
+
+// const API_BASE_URL = 'http://localhost:8000/api'; // Uncomment if you want to fetch from API
+
 const ProductPage = () => {
-  
-  const [searchTerm, setSearchTerm] = useState('');
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const searchFromQuery = queryParams.get('search') || '';
+
+  const [products, setProducts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState(searchFromQuery);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [displayOnEnter, setDisplayOnEnter] = useState(false);
 
- 
   const [filters, setFilters] = useState({
     location: '',
     expiry: '',
@@ -20,30 +24,53 @@ const ProductPage = () => {
 
   const categories = ['All', 'Bakery', 'Packaged Food', 'Restaurant Meal'];
 
-  
   useEffect(() => {
-    const shuffled = [...products].sort(() => 0.5 - Math.random());
-    setFilteredProducts(shuffled.slice(0, 8));
+    // Fetch from local JSON
+    fetch('/products.json')
+      .then(res => res.json())
+      .then(data => {
+        setProducts(data);
+        setFilteredProducts(data);
+      })
+      .catch(console.error);
+
+    // OR fetch from backend API
+    /*
+    fetch(`${API_BASE_URL}/products/`)
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch products');
+        return res.json();
+      })
+      .then(data => {
+        setProducts(data);
+        setFilteredProducts(data);
+      })
+      .catch(err => console.error(err));
+    */
   }, []);
 
-  
   useEffect(() => {
-    if (!displayOnEnter && selectedCategory === 'All' && !searchTerm && !filters.location && !filters.expiry) return;
+    if (searchFromQuery) {
+      setSearchTerm(searchFromQuery);
+    }
+  }, [searchFromQuery]);
 
-    const filtered = products.filter(product => {
-      
+  useEffect(() => {
+    let filtered = products.filter(product => {
       const matchesSearch =
         product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         product.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+        (product.tags || []).some(tag =>
+          tag.toLowerCase().includes(searchTerm.toLowerCase())
+        );
 
-      
-      const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
+      const matchesCategory =
+        selectedCategory === 'All' || product.category === selectedCategory;
 
-      
-      const matchesLocation = filters.location ? product.location === filters.location : true;
+      const matchesLocation = filters.location
+        ? product.location === filters.location
+        : true;
 
-      
       const matchesExpiry = (() => {
         if (!filters.expiry) return true;
         const today = new Date();
@@ -56,42 +83,30 @@ const ProductPage = () => {
         return true;
       })();
 
-      
-      const matchesPrice = product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1];
+      const matchesPrice =
+        product.price >= filters.priceRange[0] &&
+        product.price <= filters.priceRange[1];
 
-      return matchesSearch && matchesCategory && matchesLocation && matchesExpiry && matchesPrice;
+      return (
+        matchesSearch &&
+        matchesCategory &&
+        matchesLocation &&
+        matchesExpiry &&
+        matchesPrice
+      );
     });
 
     setFilteredProducts(filtered);
-  }, [searchTerm, selectedCategory, displayOnEnter, filters]);
-
-  const handleSearchEnter = (event) => {
-    if (event.key === 'Enter') {
-      setDisplayOnEnter(true);
-    }
-  };
-
-  
-  const applyFilters = () => {
-    setDisplayOnEnter(true);
-  };
+  }, [searchTerm, selectedCategory, filters, products]);
 
   return (
     <div>
-      <Header
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        onEnter={handleSearchEnter}
-      />
-
-      <div className="options" style={{ marginTop: '1rem', marginBottom: '1rem' }}>
+      {/* Category buttons */}
+      <div className="options" style={{ margin: '1rem 0' }}>
         {categories.map(category => (
           <button
             key={category}
-            onClick={() => {
-              setSelectedCategory(category);
-              setDisplayOnEnter(true);
-            }}
+            onClick={() => setSelectedCategory(category)}
             style={{
               backgroundColor: selectedCategory === category ? '#7bb400' : '',
               color: selectedCategory === category ? 'white' : '',
@@ -108,13 +123,17 @@ const ProductPage = () => {
       </div>
 
       <div className="main-content" style={{ display: 'flex', gap: '20px' }}>
+        {/* Filters sidebar */}
         <div className="filters-wrapper">
-          <Filters filters={filters} setFilters={setFilters} onApply={applyFilters} />
+          <Filters filters={filters} setFilters={setFilters} />
         </div>
 
+        {/* Product results */}
         <div className="products-container">
           {filteredProducts.length > 0 ? (
-            filteredProducts.map(product => <Card key={product.id} product={product} />)
+            filteredProducts.map(product => (
+              <Card key={product.id} product={product} />
+            ))
           ) : (
             <p>No products found.</p>
           )}
