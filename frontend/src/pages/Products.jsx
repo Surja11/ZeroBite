@@ -85,11 +85,7 @@ const ProductPage = () => {
 
   return (
     <div>
-      <Header
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-      />
-
+    
       <div className="options" style={{ margin: '1rem 0' }}>
         {categories.map(category => (
           <button

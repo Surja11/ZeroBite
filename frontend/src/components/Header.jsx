@@ -10,6 +10,12 @@ import carticon from "../assets/Zerobite images/cartIcon.svg";
 
 function Header({ searchTerm, setSearchTerm, onEnter }) {
   const { cartItems } = useCart();
+   const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      onEnter(e);  // call your custom handler if needed
+    }
+  };
 
   return (
     <header>
@@ -31,7 +37,7 @@ function Header({ searchTerm, setSearchTerm, onEnter }) {
                 className="search-input"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyDown={onEnter}
+                onKeyDown={handleKeyDown}
               />
             </div>
 
