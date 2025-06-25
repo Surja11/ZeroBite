@@ -180,11 +180,12 @@ SIMPLE_JWT = {
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_ALL_ORIGINS = True
-
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:5174"
 ]
+
+
 
 CORS_ALLOW_CREDENTIALS = True
 CSRF_COOKIE_HTTPONLY = False
@@ -192,7 +193,6 @@ SESSION_COOKIE_SECURE = False     # True for HTTPS, False for local dev
 CSRF_COOKIE_SECURE = False
 SESSION_COOKIE_SAMESITE = 'Lax'  # or 'None' if cross-site
 CSRF_COOKIE_SAMESITE = 'Lax'
-
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'

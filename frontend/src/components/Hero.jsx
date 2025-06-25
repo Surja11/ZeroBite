@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import main from "/images/main.jpg";
 
 function Hero() {
+const [location,setLocation] = useState("")
+
+
   return (
     <div className="w-full">
       <div className="flex flex-col md:flex-row items-center justify-between max-w-7xl mx-auto px-6 pt-0 md:pt-12 gap-10">
@@ -17,7 +20,7 @@ function Hero() {
 
           <div className="flex items-center bg-white rounded-full px-4 py-2 w-full max-w-md mx-auto md:mx-0 shadow-lg">
             <input
-              type="text"
+              type="text" onChange={HandleLocation}
               placeholder="Enter location"
               className="flex-grow bg-transparent outline-none px-2 text-gray-800"
             />

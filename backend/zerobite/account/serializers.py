@@ -47,10 +47,14 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(required = True)
 
     def validate(self, data):
-      email = data['email']
+      username = data['email']
       password = data['password']
 
+<<<<<<< HEAD
       user = authenticate(username = email, password = password)
+=======
+      user = authenticate(email = username, password = password)
+>>>>>>> 084844b92411c928e0f93b122f0e965efcb0f724
 
       if user is None:
           raise serializers.ValidationError("Invalid email or password")
