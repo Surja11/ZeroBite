@@ -4,7 +4,8 @@ import Home from "./pages/Home";
 import Header from "./components/Header";
 import Register from "./pages/Register";
 import BusinessAcc from "./pages/BusinessAcc";
-
+import Business from "./pages/Business";
+import Products from "./pages/Products";
 
 function App() {
 	return (
@@ -16,6 +17,8 @@ function App() {
 					<Route path="/register" element={<Register />} />
 					<Route path="/header" element={<Header />} />
 					<Route path='/businessacc' element={<BusinessAcc/>}/>
+					<Route path="/business" element={<Business/>}/>
+					<Route path="/products" element={<Products/>}/>
 				</Routes>
 			</BrowserRouter>
 		</>
