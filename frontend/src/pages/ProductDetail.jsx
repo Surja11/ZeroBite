@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link,useNavigate  } from 'react-router-dom';
-
+import Header from '../components/Header';
 import Card from '../components/ProductCard';
 import './ProductDetail.css';
 import Toast from '../components/Toast';
@@ -66,11 +66,11 @@ const ProductDetail = () => {
 
   return (
     <div>
-
+      
 
       {/* Toast message for feedback */}
       {toastMsg && <Toast message={toastMsg} />}
-
+      
       <div className="product-detail">
         <div className="product-header">
           <img src={product.image_url} alt={product.name} />
