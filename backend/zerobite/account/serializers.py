@@ -14,7 +14,7 @@ class RegisterSerializer(serializers.ModelSerializer):
   class Meta:
     model = User
     fields = ['email','password','password2','user_type']
-  print("serializer account")
+
   def validate(self, attrs):
     if attrs['password']!= attrs['password2']:
       raise serializers.ValidationError({
@@ -50,7 +50,7 @@ class LoginSerializer(serializers.Serializer):
       email = data['email']
       password = data['password']
 
-      user = authenticate(email = email, password = password)
+      user = authenticate(username = email, password = password)
 
       if user is None:
           raise serializers.ValidationError("Invalid email or password")
