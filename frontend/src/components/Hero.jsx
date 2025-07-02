@@ -17,7 +17,7 @@ function Hero() {
           console.log("Received products:", products);
           alert("Location data sent successfully!");
           setLocation("");
-          navigate('/');
+           navigate(`/products?lat=${lat}&lon=${lon}`);  // ← Pass lat/lon here
         } catch (err) {
           console.error("Error fetching products:", err);
         }

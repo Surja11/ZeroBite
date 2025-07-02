@@ -8,7 +8,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import BusinessAcc from './pages/BusinessAcc';
 import Business from './pages/Business';
-
+import PaymentSuccess from './pages/PaymentSuccess';
 import ProductPage from './pages/Products';
 import ProductDetail from './pages/ProductDetail';
 import CartPage from './pages/CartPage';
@@ -50,6 +50,7 @@ function AppRouter() {
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
       </Routes>
     </>
   );
