@@ -81,6 +81,26 @@ export const BusinessReg = async (postData) => {
 	}
 };
 
+// api to post products from business page
+export const postProduct = async (formData)=>{
+  const token =localStorage.getItem("access_token")
+  try{
+    const response = await axios.post(`${API_URL}add/productapi/`,formData,
+      {
+				headers: {
+              ...(token && { Authorization: `Bearer ${token}` }), // include token
+      
+				},
+			}
+    )
+    return response.data;
+  }catch(err){
+	console.error("Failed to post product:", err.response?.data || err.message);
+
+		throw err;
+  }
+}
+
 
 //api for admin oage
 

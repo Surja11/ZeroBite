@@ -11,12 +11,9 @@ function Home() {
         <Navbar/>
         <Hero/>
     <Link to="/">
-<<<<<<< HEAD
     
-=======
 <MiddleComponent/>
     <Footer/>
->>>>>>> demo
     </Link>
         </>
   )

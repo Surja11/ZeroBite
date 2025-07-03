@@ -26,7 +26,7 @@ setIsActiveComponent("productList")
   return (
     <div className="flex min-h-screen">
 
-    <div className="flex flex-col min-h-screen bg-gray-100 w-65">
+    <div className="flex flex-col min-h-screen bg-gray-100 w-65  text-gray-600">
       <hr className="text-gray-300" />
       <div className="bg-[#f8f8fa] py-1 flex flex-col items-start   space-y-3">
         <div className="flex items-center space-x-3 w-full px-5 py-2 hover:bg-gray-300 cursor-pointer">

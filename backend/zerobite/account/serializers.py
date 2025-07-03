@@ -50,13 +50,7 @@ class LoginSerializer(serializers.Serializer):
       username = data['email']
       password = data['password']
 
-<<<<<<< HEAD
-
       user = authenticate(email = username, password = password)
-
-=======
-      user = authenticate(email = username, password = password)
->>>>>>> demo
 
       if user is None:
           raise serializers.ValidationError("Invalid email or password")
