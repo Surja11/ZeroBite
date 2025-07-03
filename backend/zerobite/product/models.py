@@ -28,9 +28,11 @@ class Product(models.Model):
   expiry_date = models.DateField()
   stock = models.IntegerField()
   available = models.BooleanField(default = True)
+  stock = models.IntegerField(default = 1)
   brand = models.CharField(max_length=50, blank=True)
   # tags = models.ManyToManyField('ProductTag', blank=True)
   view_count = models.PositiveIntegerField(default=0)
+
   def __str__(self):
     return self.name
 
