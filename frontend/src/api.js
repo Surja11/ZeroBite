@@ -24,7 +24,7 @@ export const register = async (postData) => {
 export const login = async (postData) => {
   try {
     const response = await axios.post(`${API_URL}login/`, postData, {
-      headers: { "Content-Type": "application/json" },
+   
       withCredentials: true // Important for CORS with credentials
     });
     
@@ -67,11 +67,7 @@ export const BusinessReg = async (postData) => {
 	try {
 		const response = await axios.post(
 			`${API_URL}business/register/`,postData,
-			{
-				headers: {
-					"Content-Type": "application/json",
-				},
-			}
+			
 		);
 		return response.data;
 	} catch (error) {

@@ -5,15 +5,15 @@ import { postProduct } from "../api";
 function AddProduct() {
   const [image, setImage] = useState(null);
   const imageInputRef = useRef(null);
- const [productName, setProductName] = useState("");
-const [brandName, setBrandName] = useState("");
-const [price, setPrice] = useState("");
-const [description, setDescription] = useState("");
-const [category, setCategory] = useState("");
-const [stock, setStock] = useState(1);
-const [manufacturedDate, setManufacturedDate] = useState("");
-const [expiryDate, setExpiryDate] = useState("");
-const [available, setAvailable] = useState(false);
+  const [productName, setProductName] = useState("");
+  const [brandName, setBrandName] = useState("");
+  const [price, setPrice] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState([]);  // array for multiple
+  const [stock, setStock] = useState(1);
+  const [manufacturedDate, setManufacturedDate] = useState("");
+  const [expiryDate, setExpiryDate] = useState("");
+  const [available, setAvailable] = useState(false);
 
   const handleImageChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -32,38 +32,47 @@ const [available, setAvailable] = useState(false);
     }
   };
 
-  const HandleSubmit =async (e)=>{
-	e.preventDefault();
-const formData = new FormData();
-  formData.append("name", productName);
-  formData.append("brand", brandName);
-  formData.append("price", price);
-  formData.append("stock", stock);
-  formData.append("description", description);
-  formData.append("category", category);
-  formData.append("manufactured_date", manufacturedDate);
-  formData.append("expiry_date", expiryDate);
-  formData.append("available",available);
-  if (image) formData.append("image", image);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("name", productName);
+    formData.append("brand", brandName);
+    formData.append("price", price);
+    formData.append("stock", stock);
+    formData.append("description", description);
+    formData.append("manufactured_date", manufacturedDate);
+    formData.append("expiry_date", expiryDate);
+    formData.append("available", available);
+    if (image) formData.append("image", image);
 
-  try {
-    const data = await postProduct(formData);
-    console.log("Product posted:", data);
-    alert("posted")
-    setBrandName("")
-    setProductName("")
-    setCategory("")
-    setDescription("")
-    setExpiryDate("");
-    setManufacturedDate("")
-    setStock(1);
-    setImage(null)
-    setPrice("")
-    setAvailable(false)
-  } catch (error) {
-    console.error("Error submitting product:", error);
-  }
-  }
+    // Append each selected category
+   category.forEach((cat) => {
+  formData.append("category", cat);
+});
+
+
+    try {
+      const data = await postProduct(formData);
+      console.log("Product posted:", data);
+      alert("Product successfully posted!");
+
+      // Reset form state
+      setProductName("");
+      setBrandName("");
+      setPrice("");
+      setDescription("");
+      setCategory([]);
+      setStock(1);
+      setManufacturedDate("");
+      setExpiryDate("");
+      setAvailable(false);
+      setImage(null);
+    } catch (error) {
+      console.error("Error submitting product:", error);
+      alert("Error submitting product.");
+    }
+  };
+
   return (
     <>
       <div className="flex justify-evenly items-center">
@@ -78,14 +87,12 @@ const formData = new FormData();
         </button>
       </div>
 
-      <form    method="POST"
-            onSubmit={HandleSubmit}>
+      <form method="POST" onSubmit={handleSubmit}>
         <div className="flex flex-col p-6 min-h-screen w-[950px] space-y-8">
-          {/* Image Upload Section */}
+
+          {/* Image Upload */}
           <div>
-            <label className="text-gray-500 text-[15px] mb-2 block">
-              Upload image
-            </label>
+            <label className="text-gray-500 text-[15px] mb-2 block">Upload image</label>
             <input
               type="file"
               accept="image/*"
@@ -93,7 +100,6 @@ const formData = new FormData();
               className="hidden"
               ref={imageInputRef}
             />
-
             <div
               className="grid grid-cols-5 gap-2 border border-dashed border-gray-300 p-4 rounded cursor-pointer"
               onClick={() => imageInputRef.current.click()}
@@ -125,74 +131,117 @@ const formData = new FormData();
             </div>
           </div>
 
-          {/* Add your remaining form fields here... (unchanged) */}
           {/* Product Name */}
           <div>
-            <label className="text-gray-500 text-[15px]">Product Name *</label> <p></p>
-            <input type="text" value={productName} onChange={(e)=>setProductName(e.target.value)} className="outline-0 text-gray-500 border border-gray-100 rounded w-1/2 p-2 mt-3 shadow" />
+            <label className="text-gray-500 text-[15px]">Product Name *</label><p></p>
+            <input
+              type="text"
+              value={productName}
+              onChange={(e) => setProductName(e.target.value)}
+              className="outline-0 text-gray-500 border border-gray-100 rounded w-1/2 p-2 mt-3 shadow"
+            />
           </div>
 
           {/* Price and Brand */}
           <div className="flex space-x-12">
             <div>
-              <label className="text-gray-500 text-[15px]">Price *</label>
-              <input value={price}   onChange={(e) => setPrice(e.target.value)}
- type="text" className="outline-0 text-gray-500 border border-gray-100 rounded w-full p-2 mt-3 shadow" />
+              <label className="text-gray-500 text-[15px]">Price *</label><p></p>
+              <input
+                type="text"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                className="outline-0 text-gray-500 border border-gray-100 rounded w-full p-2 mt-3 shadow"
+              />
             </div>
             <div>
               <label className="text-gray-500 text-[15px]">Brand *</label>
-              <input value={brandName}   onChange={(e) => setBrandName(e.target.value)}
- type="text" className="outline-0 text-gray-500 border border-gray-100 rounded w-full p-2 mt-3 shadow" />
+              <p></p>
+              <input
+                type="text"
+                value={brandName}
+                onChange={(e) => setBrandName(e.target.value)}
+                className="outline-0 text-gray-500 border border-gray-100 rounded w-full p-2 mt-3 shadow"
+              />
             </div>
           </div>
 
           {/* Manufacture and Expiry Dates */}
           <div className="flex space-x-12">
             <div>
-              <label className="text-gray-500 text-[15px]">Manufacture Date *</label>
-              <input value={manufacturedDate}   onChange={(e) => setManufacturedDate(e.target.value)}
- type="date" className="outline-0 text-gray-500 border text-gray-500 border-gray-100 rounded w-full p-2 mt-3 shadow" />
+              <label className="text-gray-500 text-[15px]">Manufacture Date *</label><p></p>
+              <input
+                type="date"
+                value={manufacturedDate}
+                onChange={(e) => setManufacturedDate(e.target.value)}
+                className="outline-0 text-gray-500 border border-gray-100 rounded w-full p-2 mt-3 shadow"
+              />
             </div>
             <div>
-              <label className="text-gray-500 text-[15px]">Expiry date *</label>
-              <input value={expiryDate}   onChange={(e) => setExpiryDate(e.target.value)}
- type="date" className="outline-0 text-gray-500 text-gray-500 border border-gray-100 rounded w-full p-2 mt-3 shadow" />
+              <label className="text-gray-500 text-[15px]">Expiry Date *</label><p></p>
+              <input
+                type="date"
+                value={expiryDate}
+                onChange={(e) => setExpiryDate(e.target.value)}
+                className="outline-0 text-gray-500 border border-gray-100 rounded w-full p-2 mt-3 shadow"
+              />
             </div>
           </div>
-          <div>
-            {/* stock */}
-  <label className="text-gray-500 text-[15px]">Stock *</label>
- <p></p> <input
-    type="number" value={stock}
-    min={1}   onChange={(e) => setStock(e.target.value)}
 
-    className="outline-0 text-gray-500 border border-gray-100 rounded w-1/5 p-2 mt-3 shadow"
-  />
-</div>
+          {/* Stock */}
+          <div>
+            <label className="text-gray-500 text-[15px]">Stock *</label><p></p>
+            <input
+              type="number"
+              min={1}
+              value={stock}
+              onChange={(e) => setStock(e.target.value)}
+              className="outline-0 text-gray-500 border border-gray-100 rounded w-1/5 p-2 mt-3 shadow"
+            />
+          </div>
+
           {/* Description */}
           <div>
-            <label  className="mb-4 text-[15px] text-gray-500">Description *</label><p></p>
-            <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="outline-0 text-gray-500 border border-gray-100 rounded w-1/2 h-30 px-2 shadow" />
+            <label className="text-gray-500 text-[15px]">Description *</label>
+            <p></p>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="outline-0 text-gray-500 border border-gray-100 rounded w-1/2 h-30 px-2 shadow"
+            />
           </div>
 
           {/* Category */}
           <div>
-            <label className="mb-4 text-[15px] text-gray-500">Choose Category *</label> <p></p>
-            
-            <select   onChange={(e) => setCategory(e.target.value)}
- value={category} className="border text-gray-500 border-gray-100 rounded w-1/2 p-2 mt-3 shadow outline-0">
-              <option value="1">Bakery</option>
-              <option value="2">Convenience Store</option>
-              <option value="3">Restaurant</option>
-            </select>
+            <label className="text-gray-500 text-[15px]">Choose Category *</label><p></p>
+            <select
+  onChange={(e) => {
+    const selected = Array.from(e.target.selectedOptions, (option) => option.value);
+    setCategory(selected);
+  }}
+  value={category}
+  className="border text-gray-500 border-gray-100 rounded w-1/2 p-2 mt-3 shadow outline-0"
+>
+  <option value="">-- Select a category --</option> {/* Blank option */}
+
+  <option value="Cake">Cake</option>
+  <option value="Donut">Donut</option>
+  {/* <option value="convenience_store">convenience_store</option> */}
+</select>
+
           </div>
 
-{/* Available */}
-<div className="flex items-center gap-2 mt-4">
-  <input type="checkbox" id="available" className="w-4 h-4"   checked={available}
-      onChange={(e) => setAvailable(e.target.checked)} />
-  <label htmlFor="available" className="text-gray-500 text-[15px]">Available for Sale</label>
-</div>
+          {/* Available */}
+          <div className="flex items-center gap-2 mt-4">
+            <input
+              type="checkbox"
+              id="available"
+              checked={available}
+              onChange={(e) => setAvailable(e.target.checked)}
+              className="w-4 h-4"
+            />
+            <label htmlFor="available" className="text-gray-500 text-[15px]">Available for Sale</label>
+          </div>
+
           {/* Submit Button */}
           <button
             type="submit"
@@ -206,4 +255,4 @@ const formData = new FormData();
   );
 }
 
-export default AddProduct;
+export default AddProduct; 
