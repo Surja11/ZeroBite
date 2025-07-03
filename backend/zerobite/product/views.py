@@ -8,11 +8,15 @@ from rest_framework import status
 from datetime import datetime, date
 from business.permissons import *
 from rest_framework import viewsets
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,permission_classes
 # Create your views here.
 
-# @api_view(['POST'])
-# def addCategory(self, request):
+@api_view(['GET'])
+@permission_classes([IsBusinessPermission])
+def showCategory(request):
+  category = Category.objects.all()
+  serializer = CategorySerializer(category, many = True)
+  return Response(serializer.data)
 
 
 
@@ -70,12 +74,12 @@ class ProductViewSet(viewsets.ViewSet):
 
   def create(self, request):
       serializer = ProductSerializer(data = request.data, context = {'request': request})
-      print("1")
+      # print("1")
       if serializer.is_valid():
-        print("2")
+        # print("2")
         try:
           serializer.save()
-          print('3')
+          # print('3')
           return Response({"message": "Product Added"}, status= status.HTTP_201_CREATED)
         except Exception as e:
           print(f"Error while saving : {str(e)}")
