@@ -21,4 +21,6 @@ class Business(User):
   def __str__(self):
     return self.business_name
   
+  
+  
 

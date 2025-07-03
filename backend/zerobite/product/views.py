@@ -8,7 +8,13 @@ from rest_framework import status
 from datetime import datetime, date
 from business.permissons import *
 from rest_framework import viewsets
+from rest_framework.decorators import api_view
 # Create your views here.
+
+# @api_view(['POST'])
+# def addCategory(self, request):
+
+
 
 
 class ProductView(APIView):
@@ -63,14 +69,20 @@ class ProductViewSet(viewsets.ViewSet):
   permission_classes = [IsBusinessPermission]
 
   def create(self, request):
-    try:
       serializer = ProductSerializer(data = request.data, context = {'request': request})
+      print("1")
       if serializer.is_valid():
-        serializer.save()
-        return Response({"message": "Product Added"}, status= status.HTTP_201_CREATED)
-    except:
-      return Response({"error": "User is not associated with business"}, status= status.HTTP_400_BAD_REQUEST)
-    return Response(serializer.errors)
+        print("2")
+        try:
+          serializer.save()
+          print('3')
+          return Response({"message": "Product Added"}, status= status.HTTP_201_CREATED)
+        except Exception as e:
+          print(f"Error while saving : {str(e)}")
+  
+          return Response({"error": "User is not associated with business"}, status= status.HTTP_400_BAD_REQUEST)
+      else:
+        return Response(serializer.errors)
   
   def list(self, request):
       all_products = Product.objects.filter(business = request.user.business) 

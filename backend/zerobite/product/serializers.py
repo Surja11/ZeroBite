@@ -4,6 +4,11 @@ from datetime import date
 
 class ProductSerializer(serializers.ModelSerializer):
   discounted_price = serializers.SerializerMethodField()
+  category =  serializers.SlugRelatedField(
+     many = True,
+     queryset = Category.objects.all(),
+     slug_field = 'name'
+  )
 
   class Meta:
     model = Product
@@ -28,10 +33,22 @@ class ProductSerializer(serializers.ModelSerializer):
   
   def create(self, validated_data):
     validated_data.pop('discounted_price', None)
+    category = validated_data.pop('category', [])
+    user = self.context['request'].user
+    business = self._get_business_instance(user)
+    if not business:
+      raise serializers.ValidationError("User is not registered as a business.")
+    validated_data['business'] = business
+    product =  Product.objects.create(**validated_data)
+    product.category.set(category)
+    return product
+  
+  def _get_business_instance(self, user):
+        try:
+            return Business.objects.get(id=user.id)
+        except Business.DoesNotExist:
+            return None
 
-    validated_data['business'] = self.context['request'].business
-
-    return Product.objects.create(**validated_data)
     
     
 

@@ -10,7 +10,7 @@ from product.priority_utils import *
 def build_documents(products):
   documents = {}
   for product in products:
-    text = f"{product.name} {product.description} {product.category.name} {product.tags} {product.brand}"
+    text = f"{product.name} {product.description} {product.category.name} {product.brand}"
     documents[str(product.id)]  = text
   return documents
 
