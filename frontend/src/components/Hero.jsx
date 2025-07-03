@@ -1,9 +1,35 @@
 import React, { useState } from 'react';
 import main from "/images/main.jpg";
-
+import { Location } from '../api';
+import { Navigate, useNavigate } from 'react-router-dom';
 function Hero() {
+const navigate = useNavigate()
 const [location,setLocation] = useState("")
+const HandleLocation =()=>
+{
+navigator.geolocation.getCurrentPosition(
+async (position) =>{
+  const lat = position.coords.latitude;
+  const lon = position.coords.longitude
+  try{
 
+  const products = await Location(lat, lon);
+        console.log("Received products:", products);
+        alert("send")
+        setLocation("")
+        navigate('/')
+        // You could set them in state here
+      } catch (err) {
+        console.error("Error fetching products:", err);
+        }  
+      },
+      (err) => {
+    console.error("Geolocation error:", err);
+    alert("Location access denied or unavailable");
+  }
+)
+  
+}
 
   return (
     <div className="w-full">
@@ -20,11 +46,11 @@ const [location,setLocation] = useState("")
 
           <div className="flex items-center bg-white rounded-full px-4 py-2 w-full max-w-md mx-auto md:mx-0 shadow-lg">
             <input
-              type="text" onChange={HandleLocation}
-              placeholder="Enter location"
+              type="text" onChange={(e)=>{setLocation(e.target.value)}}
+              placeholder="Enter location" value={location}
               className="flex-grow bg-transparent outline-none px-2 text-gray-800"
             />
-            <button className="bg-green-600 text-white px-4 py-1 rounded-full hover:bg-green-700 transition">
+            <button className="bg-green-600 text-white px-4 py-1 rounded-full hover:bg-green-700 transition" onClick={HandleLocation}>
               Search
             </button>
           </div>
