@@ -9,7 +9,7 @@ function AddProduct() {
   const [brandName, setBrandName] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState([]);  // array for multiple
+  const [category, setCategory] = useState([]); // array for multiple
   const [stock, setStock] = useState(1);
   const [manufacturedDate, setManufacturedDate] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
@@ -26,7 +26,9 @@ function AddProduct() {
   };
 
   const handleDeleteProduct = () => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this product?");
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this product?"
+    );
     if (confirmDelete) {
       console.log("Product deleted");
     }
@@ -46,10 +48,9 @@ function AddProduct() {
     if (image) formData.append("image", image);
 
     // Append each selected category
-   category.forEach((cat) => {
-  formData.append("category", cat);
-});
-
+    category.forEach((cat) => {
+      formData.append("category", cat);
+    });
 
     try {
       const data = await postProduct(formData);
@@ -89,10 +90,11 @@ function AddProduct() {
 
       <form method="POST" onSubmit={handleSubmit}>
         <div className="flex flex-col p-6 min-h-screen w-[950px] space-y-8">
-
           {/* Image Upload */}
           <div>
-            <label className="text-gray-500 text-[15px] mb-2 block">Upload image</label>
+            <label className="text-gray-500 text-[15px] mb-2 block">
+              Upload image
+            </label>
             <input
               type="file"
               accept="image/*"
@@ -133,7 +135,8 @@ function AddProduct() {
 
           {/* Product Name */}
           <div>
-            <label className="text-gray-500 text-[15px]">Product Name *</label><p></p>
+            <label className="text-gray-500 text-[15px]">Product Name *</label>
+            <p></p>
             <input
               type="text"
               value={productName}
@@ -145,7 +148,8 @@ function AddProduct() {
           {/* Price and Brand */}
           <div className="flex space-x-12">
             <div>
-              <label className="text-gray-500 text-[15px]">Price *</label><p></p>
+              <label className="text-gray-500 text-[15px]">Price *</label>
+              <p></p>
               <input
                 type="text"
                 value={price}
@@ -168,7 +172,10 @@ function AddProduct() {
           {/* Manufacture and Expiry Dates */}
           <div className="flex space-x-12">
             <div>
-              <label className="text-gray-500 text-[15px]">Manufacture Date *</label><p></p>
+              <label className="text-gray-500 text-[15px]">
+                Manufacture Date *
+              </label>
+              <p></p>
               <input
                 type="date"
                 value={manufacturedDate}
@@ -177,7 +184,8 @@ function AddProduct() {
               />
             </div>
             <div>
-              <label className="text-gray-500 text-[15px]">Expiry Date *</label><p></p>
+              <label className="text-gray-500 text-[15px]">Expiry Date *</label>
+              <p></p>
               <input
                 type="date"
                 value={expiryDate}
@@ -189,7 +197,8 @@ function AddProduct() {
 
           {/* Stock */}
           <div>
-            <label className="text-gray-500 text-[15px]">Stock *</label><p></p>
+            <label className="text-gray-500 text-[15px]">Stock *</label>
+            <p></p>
             <input
               type="number"
               min={1}
@@ -212,22 +221,39 @@ function AddProduct() {
 
           {/* Category */}
           <div>
-            <label className="text-gray-500 text-[15px]">Choose Category *</label><p></p>
+            <label className="text-gray-500 text-[15px]">
+              Choose Category *
+            </label>
+            <p></p>
             <select
-  onChange={(e) => {
-    const selected = Array.from(e.target.selectedOptions, (option) => option.value);
-    setCategory(selected);
-  }}
-  value={category}
-  className="border text-gray-500 border-gray-100 rounded w-1/2 p-2 mt-3 shadow outline-0"
->
-  <option value="">-- Select a category --</option> {/* Blank option */}
-
-  <option value="Cake">Cake</option>
-  <option value="Donut">Donut</option>
-  {/* <option value="convenience_store">convenience_store</option> */}
-</select>
-
+              onChange={(e) => {
+                const selected = Array.from(
+                  e.target.selectedOptions,
+                  (option) => option.value
+                );
+                setCategory(selected);
+              }}
+              value={category}
+              className="border text-gray-500 border-gray-100 rounded w-1/2 p-2 mt-3 shadow outline-0"
+            >
+              <option value="">-- Select a category --</option>{" "}
+              {/* Blank option */}
+              <option value="Cake">Cake</option>
+              <option value="Donut">Donut</option>
+              <option value="Pastry">Pastry</option>
+              <option value="Nepali Khana">Nepali Khana</option>
+              <option value="Grocery">Grocery</option>
+              <option value="Desserts">Desserts</option>
+              <option value="Chinese Cuisine">Chinese Cuisine</option>
+              <option value="Fast Food">Fast Food</option>
+              <option value="Snacks">Snacks</option>
+              <option value="Bread">Bread</option>
+              <option value="Vegan">Vegan</option>
+              <option value="Gluten-Free">Gluten-Free</option>
+              <option value="Continental">Continental</option>
+              <option value="Beverages">Beverages</option>
+              <option value="Indian Cuisine">Indian Cuisine</option>
+            </select>
           </div>
 
           {/* Available */}
@@ -239,7 +265,9 @@ function AddProduct() {
               onChange={(e) => setAvailable(e.target.checked)}
               className="w-4 h-4"
             />
-            <label htmlFor="available" className="text-gray-500 text-[15px]">Available for Sale</label>
+            <label htmlFor="available" className="text-gray-500 text-[15px]">
+              Available for Sale
+            </label>
           </div>
 
           {/* Submit Button */}
@@ -255,4 +283,4 @@ function AddProduct() {
   );
 }
 
-export default AddProduct; 
+export default AddProduct;
