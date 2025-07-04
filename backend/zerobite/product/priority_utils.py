@@ -54,13 +54,32 @@ class PriorityQueue:
 
 
 
-def haversine(lat1, lat2, lon1, lon2):
-  R = 6371
-  dlat = radians(lat2 - lat1)
-  dlon = radians(lon2 - lon1)
-  a = sin(dlat/2)**2 + cos(radians(lat1))* cos(radians(lat2)) *sin(dlon/2)**2
-  c = 2 * asin(sqrt(a))
-  return R*c
+# def haversine(lat1, lat2, lon1, lon2):
+#   R = 6371
+#   dlat = radians(lat2 - lat1)
+#   dlon = radians(lon2 - lon1)
+#   a = sin(dlat/2)**2 + cos(radians(lat1))* cos(radians(lat2)) *sin(dlon/2)**2
+#   c = 2 * asin(sqrt(a))
+#   return R*c
+
+def batch_haversine(user_lat, user_lon, products):
+    R = 6371  # Earth radius in km
+    user_lat_rad = radians(user_lat)
+    user_lon_rad = radians(user_lon)
+    distances = []
+    
+    for product in products:
+        store_lat = radians(float(product.business.store_latitude))
+        store_lon = radians(float(product.business.store_longitude))
+        
+        dlat = store_lat - user_lat_rad
+        dlon = store_lon - user_lon_rad
+        
+        a = sin(dlat/2)**2 + cos(user_lat_rad) * cos(store_lat) * sin(dlon/2)**2
+        distances.append(2 * R * asin(sqrt(a)))
+    
+    return distances
+
 
 def normalize(value, min_value, max_value):
   if max_value == min_value:

@@ -10,6 +10,7 @@ from business.permissons import *
 from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import api_view,permission_classes
+import heapq
 # Create your views here.
 
 @api_view(['GET'])
@@ -20,67 +21,108 @@ def showCategory(request):
   return Response(serializer.data)
 
 
+
+@api_view(['GET'])
+def showProduct(request, pk):
+  product = get_object_or_404(Product, pk = pk)
+  serializer = ProductSerializer(product)
+  return Response(serializer.data)
+
 # class StandardResultsSetPagination(PageNumberPagination):
 #     page_size = 10  
 #     page_size_query_param = 'page_size'  
 #     max_page_size = 50
 
 
+# class ProductView(APIView):
+#   def get(self, request):
+#     products = Product.objects.all()
+
+#     user_lat = float(request.query_params.get('lat'))
+#     user_lon = float(request.query_params.get('lon'))
+    
+#     distance_map = {}
+#     expiry_map = {}
+
+#     distance_list = []
+#     expiry_list = []
+
+#     for product in products:
+#       store_lat = float(product.business.store_latitude)
+#       store_lon = float(product.business.store_longitude)
+#       expiry = product.expiry_date
+
+#       distance = haversine(user_lat, store_lat, user_lon, store_lon)
+
+#       days_to_expiry = (expiry - date.today()).days
+
+#       distance_map[product.id] = distance
+#       expiry_map[product.id] = days_to_expiry
+#       distance_list.append(distance)
+#       expiry_list.append(days_to_expiry)
+
+#     max_distance = max(distance_list) if distance_list else 1
+#     max_days = max(expiry_list) if expiry_list else 1
+
+
+#     heap = PriorityQueue()
+
+#     for product in products:
+#       distance = distance_map[product.id]
+#       days_to_expiry = expiry_map[product.id]
+#       priority = calc_priority(distance, days_to_expiry, max_distance, max_days)
+#       heap.push(priority, product)
+    
+#     sorted_products = []
+#     while heap.size()>0:
+#       product = heap.pop()
+#       print("POPPED:", product)
+#       if product:
+#         sorted_products.append(product)
+    
+#     # paginator = StandardResultsSetPagination()
+#     # paginated_products = paginator.paginate_queryset(sorted_products, request)
+
+#     # serializer = ProductSerializer(paginated_products, many = True)
+#     # return paginator.get_paginated_response(serializer.data)
+#     serializer = ProductSerializer(sorted_products, many = True)
+#     return Response(serializer.data)
+
 class ProductView(APIView):
-  def get(self, request):
-    products = Product.objects.all()
+    def get(self, request):
+       
+        products = Product.objects.select_related('business').only(
+            'id', 'expiry_date', 'business__store_latitude', 'business__store_longitude'
+        ).all()
+        
+        user_lat = float(request.query_params.get('lat', 0))
+        user_lon = float(request.query_params.get('lon', 0))
+        
 
-    user_lat = float(request.query_params.get('lat'))
-    user_lon = float(request.query_params.get('lon'))
-    
-    distance_map = {}
-    expiry_map = {}
+        distances = batch_haversine(user_lat, user_lon, products)
+        expiry_days = [(p.expiry_date - date.today()).days for p in products]
+        
+        max_distance = max(distances) if distances else 1
+        max_days = max(expiry_days) if expiry_days else 1
+        
 
-    distance_list = []
-    expiry_list = []
+        heap = PriorityQueue()
+        for product, distance, days in zip(products, distances, expiry_days):
+            priority = calc_priority(distance, days, max_distance, max_days)
+            heap.push(priority, product)
+        
 
-    for product in products:
-      store_lat = float(product.business.store_latitude)
-      store_lon = float(product.business.store_longitude)
-      expiry = product.expiry_date
-
-      distance = haversine(user_lat, store_lat, user_lon, store_lon)
-
-      days_to_expiry = (expiry - date.today()).days
-
-      distance_map[product.id] = distance
-      expiry_map[product.id] = days_to_expiry
-      distance_list.append(distance)
-      expiry_list.append(days_to_expiry)
-
-    max_distance = max(distance_list) if distance_list else 1
-    max_days = max(expiry_list) if expiry_list else 1
+        sorted_products = []
+        while heap.size() > 0 and len(sorted_products) < 100:
+            product = heap.pop()
+            if product:
+                sorted_products.append(product)
+        
+        serializer = ProductSerializer(sorted_products, many=True)
+        return Response(serializer.data)
 
 
-    heap = PriorityQueue()
 
-    for product in products:
-      distance = distance_map[product.id]
-      days_to_expiry = expiry_map[product.id]
-      priority = calc_priority(distance, days_to_expiry, max_distance, max_days)
-      heap.push(priority, product)
-    
-    sorted_products = []
-    while heap.size()>0:
-      product = heap.pop()
-      print("POPPED:", product)
-      if product:
-        sorted_products.append(product)
-    
-    # paginator = StandardResultsSetPagination()
-    # paginated_products = paginator.paginate_queryset(sorted_products, request)
-
-    # serializer = ProductSerializer(paginated_products, many = True)
-    # return paginator.get_paginated_response(serializer.data)
-    serializer = ProductSerializer(sorted_products, many = True)
-    return Response(serializer.data)
-  
-  
 class ProductViewSet(viewsets.ViewSet):
   permission_classes = [IsBusinessPermission]
 
@@ -107,15 +149,15 @@ class ProductViewSet(viewsets.ViewSet):
    
   
   def retrieve(self,request, pk = None):
-    id = pk 
+
     if id is not None:
-      product = get_object_or_404(Product,id = id)
+      product = get_object_or_404(Product,pk = pk)
       serializer = ProductSerializer(product)
       return Response(serializer.data)
     
   def update(self, request, pk):
     
-    product = get_object_or_404(Product,pk = pk)
+    product = get_object_or_404(Product, pk = pk)
     try:
       serializer = ProductSerializer(product, data = request.data, context = {'request': request})
       if serializer.is_valid():
@@ -126,7 +168,7 @@ class ProductViewSet(viewsets.ViewSet):
     
   def destroy(self, request, pk):
   
-    product = get_object_or_404(Product, pk= pk)
+    product = get_object_or_404(Product, pk = pk)
     product.delete()
     return Response({'message': 'Deleted'})
     
