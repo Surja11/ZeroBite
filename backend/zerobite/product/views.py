@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,get_object_or_404
 from .priority_utils import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -28,8 +28,8 @@ class ProductView(APIView):
     user_lat = float(request.query_params.get('lat'))
     user_lon = float(request.query_params.get('lon'))
     
-    distances = {}
-    expiries = {}
+    distance_map = {}
+    expiry_map = {}
 
     distance_list = []
     expiry_list = []
@@ -43,25 +43,27 @@ class ProductView(APIView):
 
       days_to_expiry = (expiry - date.today()).days
 
-      distances[product.id] = distance
-      expiries[product.id] = days_to_expiry
-      days_to_expiry.append(distance)
-      expiry.append(days_to_expiry)
+      distance_map[product.id] = distance
+      expiry_map[product.id] = days_to_expiry
+      distance_list.append(distance)
+      expiry_list.append(days_to_expiry)
 
     max_distance = max(distance_list) if distance_list else 1
-    max_days = max(days_to_expiry) if expiry_list else 1
+    max_days = max(expiry_list) if expiry_list else 1
+
 
     heap = PriorityQueue()
 
     for product in products:
-      distance = distances[product.id]
-      days_to_expiry = expiries[product.id]
+      distance = distance_map[product.id]
+      days_to_expiry = expiry_map[product.id]
       priority = calc_priority(distance, days_to_expiry, max_distance, max_days)
-      heap.push((priority, product))
+      heap.push(priority, product)
     
     sorted_products = []
     while heap.size()>0:
       product = heap.pop()
+      print("POPPED:", product)
       if product:
         sorted_products.append(product)
 
@@ -97,7 +99,7 @@ class ProductViewSet(viewsets.ViewSet):
   def retrieve(self,request, pk = None):
     id = pk 
     if id is not None:
-      product = Product.objects.get(id = id)
+      product = get_object_or_404(Product,id = id)
       serializer = ProductSerializer(product)
       return Response(serializer.data)
     

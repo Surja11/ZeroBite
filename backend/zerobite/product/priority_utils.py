@@ -12,7 +12,7 @@ class PriorityQueue:
     if not self.heap:
       return None
     if len(self.heap) == 1:
-      return self.heap.pop()
+      return self.heap.pop()[1]
     self.swap(0, len(self.heap) - 1)
     item = self.heap.pop()[1]
     self.shift_down(0)
@@ -35,7 +35,7 @@ class PriorityQueue:
       if left<size and self.heap[left][0]<self.heap[smallest][0]:
         smallest = left
       
-      if right<size and self.heap[right]<self.heap[smallest][0]:
+      if right<size and self.heap[right][0]<self.heap[smallest][0]:
         smallest = right
 
       if smallest == i: 

@@ -30,7 +30,7 @@ class ProductRecommendationView(APIView):
     if product_id:
       try:
         product = Product.objects.get(id = product_id)
-        query = f"{product.name}"
+        query = f"{product.name} {product.description} {product.category} {product.brand}"
       except Product.DoesNotExist:
         return Response({"error":"Product not found"})
    
@@ -44,16 +44,17 @@ class ProductRecommendationView(APIView):
       similarity = tfidf.cosine_similarity(query_vector, doc_vec)
       pq.push(-similarity, (doc_id,similarity))
 
+    product_map = {str(p.id): p for p in products}
     results = []
     for _ in range(min(7, pq.size())):
       doc_id, sim = pq.pop()
-      product = Product.objects.get(id=doc_id)
+      product = product_map[doc_id]
       product.similarity = sim
            
       results.append(product)
 
-      serializer = ProductRecommendationSerializer(results, many=True)
-      return Response(serializer.data)
+    serializer = ProductRecommendationSerializer(results, many=True)
+    return Response(serializer.data)
     
 
 
