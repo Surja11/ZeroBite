@@ -8,6 +8,7 @@ from rest_framework import status
 from datetime import datetime, date
 from business.permissons import *
 from rest_framework import viewsets
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import api_view,permission_classes
 # Create your views here.
 
@@ -19,6 +20,10 @@ def showCategory(request):
   return Response(serializer.data)
 
 
+# class StandardResultsSetPagination(PageNumberPagination):
+#     page_size = 10  
+#     page_size_query_param = 'page_size'  
+#     max_page_size = 50
 
 
 class ProductView(APIView):
@@ -66,7 +71,12 @@ class ProductView(APIView):
       print("POPPED:", product)
       if product:
         sorted_products.append(product)
+    
+    # paginator = StandardResultsSetPagination()
+    # paginated_products = paginator.paginate_queryset(sorted_products, request)
 
+    # serializer = ProductSerializer(paginated_products, many = True)
+    # return paginator.get_paginated_response(serializer.data)
     serializer = ProductSerializer(sorted_products, many = True)
     return Response(serializer.data)
   
@@ -104,8 +114,8 @@ class ProductViewSet(viewsets.ViewSet):
       return Response(serializer.data)
     
   def update(self, request, pk):
-    id = pk 
-    product = Product.objects.get(pk = id)
+    
+    product = get_object_or_404(Product,pk = pk)
     try:
       serializer = ProductSerializer(product, data = request.data, context = {'request': request})
       if serializer.is_valid():
@@ -115,8 +125,8 @@ class ProductViewSet(viewsets.ViewSet):
       return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
     
   def destroy(self, request, pk):
-    id = pk
-    product = Product.objects.get(pk= id)
+  
+    product = get_object_or_404(Product, pk= pk)
     product.delete()
     return Response({'message': 'Deleted'})
     
