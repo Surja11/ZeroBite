@@ -97,6 +97,26 @@ export const postProduct = async (formData)=>{
   }
 }
 
+//apito get products
+
+export const getProduct = async ()=>{
+  const token =localStorage.getItem("access_token")
+  try{
+    const response = await axios.get(`${API_URL}add/productapi/`,
+      {
+				headers: {
+              ...(token && { Authorization: `Bearer ${token}` }), // include token
+      
+				},
+			}
+    )
+    return response.data;
+  }catch(err){
+	console.error("Failed to get product:", err.response?.data || err.message);
+
+		throw err;
+  }
+}
 
 //api for admin oage
 
@@ -114,6 +134,9 @@ export const fetchAddressFromLatLng = async (lat, lng) => {
     return "Could not fetch address";
   }
 };
+
+
+
 
 
 //location search
@@ -134,3 +157,22 @@ export const Location = async (lat, lon) => {
 
 
 // http://127.0.0.1:8000/customer/customerregister/
+//delete element 
+export const deleteProduct = async (id)=>{
+  const token =localStorage.getItem("access_token")
+  try{
+    const response = await axios.delete(`${API_URL}add/productapi/${id}/`,
+      {
+				headers: {
+              ...(token && { Authorization: `Bearer ${token}` }), // include token
+      
+				},
+			}
+    )
+    return response.data;
+  }catch(err){
+	console.error("Failed to post product:", err.response?.data || err.message);
+
+		throw err;
+  }
+}

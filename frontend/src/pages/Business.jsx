@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Vector from "/images/Vector.png";
 import down from "/images/down.png";
 import dropup from "/images/dropup.png";
@@ -7,11 +7,17 @@ import product from "/images/product.png";
 import ProductList from "../components/ProductList";
 import AddProduct from "../components/AddProduct";
 import { useState } from "react";
+import ProductDetail from "../components/ProductDetail";
 
 function Business() {
   const [dropmen, setIsDrop] = useState(false);
   const [isActiveComponent,setIsActiveComponent]= useState(null)
   const [AddProductComponent, setAddProduct] = useState(null)
+const [selectedProduct, setSelectedProduct] = useState(null)
+
+  useEffect(()=>{
+setIsActiveComponent("productList")
+  },[])
   const HandleDrop = () => {
     setIsDrop((prev) => !prev);
   };
@@ -76,7 +82,13 @@ setIsActiveComponent("productList")
     
     </div>
       <div className="flex-1 p-6 bg-white">
-      {isActiveComponent=== "productList" ?<ProductList/>: <AddProduct/>}
+{selectedProduct ? (
+  <ProductDetail product={selectedProduct} onBack={() => setSelectedProduct(null)} />
+) : isActiveComponent === "productList" ? (
+  <ProductList onProductClick={setSelectedProduct} />
+) : (
+  <AddProduct />
+)}
     </div>
      
     </div>
