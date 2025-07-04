@@ -1,12 +1,16 @@
-.navbar-custom{
-    background-color:#E0DEDE;
-    padding: 10px 40px;
-    border-bottom: 1px solid #ccc;
+/* Header.css */
+
+.navbar-custom {
+  background-color: #E5E7EB; /* same as bg-gray-200 */
+  padding: 12px 16px;        /* vertical and horizontal padding */
+  border-bottom: 1px solid #ccc;
 }
+
 .container-custom {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 0 16px;
 }
 
 .logo-link {
@@ -15,52 +19,61 @@
 }
 
 .logo-img {
-  height: 40px;
-  width: auto;
+  width: 60px;    /* same as w-15 in navbar */
+  height: auto;
+  cursor: pointer;
+  margin: 0;      /* remove default margins */
+  padding: 0;
 }
-
 
 .right-section {
   display: flex;
   align-items: center;
-  gap: 50px; 
+  gap: 30px;       
 }
 
-
+/* Search bar container and icon */
 .search-container {
   position: relative;
   display: flex;
   align-items: center;
-  
 }
 
 .search-icon {
   position: absolute;
   left: 10px;
-  width: 16px;
+  width: 30px;
   height: 16px;
-  pointer-events: none; 
+  pointer-events: none;
 }
 
 .search-input {
-  width:280px;
+  width: 220px;            /* slightly smaller to match navbar layout */
   padding: 8px 8px 8px 32px; 
   border: 1px solid #ccc;
   border-radius: 12px;
   background-color: white;
+  font-size: 14px;
 }
 
-
-
+/* Icons styling */
 .icon-img {
   height: 30px;
   width: 30px;
   cursor: pointer;
+  opacity: 1;
+  transition: opacity 0.2s ease;
 }
-.cart{
-  opacity:.8;
-  transition: opacity 0.2s;
+
+.icon-img.cart {
+  opacity: 0.8;
 }
+
+.icon-img.cart:hover {
+  opacity: 1;
+}
+
+/* Cart count badge */
 .cart-count {
   position: absolute;
   top: -4px;
@@ -70,4 +83,6 @@
   font-size: 11px;
   padding: 2px 6px;
   border-radius: 50%;
+  font-weight: bold;
+  pointer-events: none;
 }

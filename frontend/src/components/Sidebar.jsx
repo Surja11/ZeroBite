@@ -13,7 +13,7 @@ function Sidebar({ closeSidebar }) {
 
       <div className="w-full px-4">
 	  <Link to="/login">
-        <button className="bg-[#1b5968] hover:bg-[#4b5f64] text-white font-bold py-2 px-4 rounded-xl focus:outline-none focus:shadow-outline w-full disabled:opacity-50">
+        <button className="bg-[#00a63e] hover:bg-[#4b5f64] text-white font-bold py-2 px-4 rounded-xl focus:outline-none focus:shadow-outline w-full disabled:opacity-50">
           Login
         </button>
 	  </Link>
@@ -21,7 +21,7 @@ function Sidebar({ closeSidebar }) {
 
       <div className="w-full px-4 mt-4">
 	  <Link to="/register">
-        <button className="bg-[#1b5968] hover:bg-[#4b5f64] text-white font-bold py-2 px-4 rounded-xl focus:outline-none focus:shadow-outline w-full disabled:opacity-50">
+        <button className="bg-[#4b78bc] hover:bg-[#4b5f64] text-white font-bold py-2 px-4 rounded-xl focus:outline-none focus:shadow-outline w-full disabled:opacity-50">
           Sign Up
         </button>
 	  </Link>

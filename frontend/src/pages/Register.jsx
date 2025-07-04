@@ -146,7 +146,7 @@ function Register() {
 						<div>
 							<button
 								type="submit"
-								className="bg-[#1b5968] hover:bg-[#4b5f64] text-white font-bold py-2 px-4 rounded-xl focus:outline-none focus:shadow-outline w-full disabled:opacity-50"
+								className="bg-[#00a63e] hover:bg-[#4b5f64] text-white font-bold py-2 px-4 rounded-xl focus:outline-none focus:shadow-outline w-full disabled:opacity-50"
 							>
 								Sign Up
 							</button>

@@ -26,12 +26,12 @@ function Navbar() {
 				</div>
 				<div className="flex items-center space-x-2">
 					<Link to="/login">
-						<button className="bg-[#AEB18A] rounded-2xl text-sm px-3 py-1 font-[roboto] font-semibold cursor-pointer">
+						<button className="bg-[#00a63e] rounded-2xl text-sm text-white px-3 py-1 font-[roboto] font-semibold cursor-pointer hover:bg-[#4b5f64]">
 							Login
 						</button>
 					</Link>
 					<Link to="/register">
-						<button className="bg-gray-400 rounded-2xl text-sm px-3 py-1 font-[roboto] font-semibold cursor-pointer">
+						<button className="bg-[#4b78bc] text-white rounded-2xl text-sm px-3 py-1 font-[roboto] font-semibold cursor-pointer hover:bg-[#4b5f64]">
 							Signup
 						</button>
 					</Link>
