@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from .services.recommendationalgo import *
 from rest_framework.response import Response
 from product.priority_utils import *
+from .serializers import *
 
 # Create your views here.
 
@@ -36,6 +37,23 @@ class ProductRecommendationView(APIView):
 
     query_vector = tfidf.query_vector(query)
     pq = PriorityQueue()
+
+    for doc_id, doc_vec in tfidf.tfidf_matrix:
+      if doc_id == str(product_id):
+        continue
+      similarity = tfidf.cosine_similarity(query_vector, doc_vec)
+      pq.push(-similarity, (doc_id,similarity))
+
+    results = []
+    for _ in range(min(7, pq.size())):
+      doc_id, sim = pq.pop()
+      product = Product.objects.get(id=doc_id)
+      product.similarity = sim
+           
+      results.append(product)
+
+      serializer = ProductRecommendationSerializer(results, many=True)
+      return Response(serializer.data)
     
 
 

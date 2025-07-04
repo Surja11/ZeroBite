@@ -1,7 +1,11 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 import re, math
 from porterstemmer import *
 from stopwords import *
 from collections import defaultdict
+from product.priority_utils import *
 
 
 class TFIDF:
@@ -49,23 +53,44 @@ class TFIDF:
     return idf
     
   def compute_tfidf(self):
-        self.build_vocab()
-        self.idf = self.compute_idf()
-        
-        for doc_id in self.doc_ids:
-            tf = self.compute_tf(self.processed_documents[doc_id])
-            tfidf_vector = [tf.get(term, 0) * self.idf.get(term, 0) for term in self.vocab]
-            self.tfidf_matrix.append((doc_id, tfidf_vector))
-        
-        return self.tfidf_matrix
+    self.build_vocab()
+    self.idf = self.compute_idf()
+    
+    for doc_id in self.doc_ids:
+        tf = self.compute_tf(self.processed_documents[doc_id])
+        tfidf_vector = [tf.get(term, 0) * self.idf.get(term, 0) for term in self.vocab]
+        self.tfidf_matrix.append((doc_id, tfidf_vector))
+    
+    return self.tfidf_matrix
 
   def cosine_similarity(self, vec1, vec2):
-        dot_product = sum(a * b for a, b in zip(vec1, vec2))
-        norm1 = math.sqrt(sum(a * a for a in vec1))
-        norm2 = math.sqrt(sum(b * b for b in vec2))
-        if norm1 == 0 or norm2 == 0:
-            return 0.0
-        return dot_product / (norm1 * norm2)
+    dot_product = sum(a * b for a, b in zip(vec1, vec2))
+    norm1 = math.sqrt(sum(a * a for a in vec1))
+    norm2 = math.sqrt(sum(b * b for b in vec2))
+    if norm1 == 0 or norm2 == 0:
+        return 0.0
+    return dot_product / (norm1 * norm2)
+  
+  def query_vector(self, query):
+    tokens = self.preprocess(query)
+    query_tf = self.compute_tf(tokens)
+    tfidf = [query_tf.get(term, 0) * self.idf.get(term,0) for term in self.vocab]
+    return tfidf
+  
+  def rank_documents(self, query, top_k  =7):
+    query_vector = self.query_vector(query)
+    pq = PriorityQueue()
+
+    for doc_id, doc_vec in self.tfidf_matrix:
+      similarity = self.cosine_similarity(query_vector, doc_vec)
+      pq.push(-similarity, (doc_id, similarity))
+
+    for _ in range(min(top_k, pq.size())):
+      doc_id, sim = pq.pop()
+      print(f"{doc_id} -> Similarity: {sim:.2f}")
+
+
+
 
 
 if __name__ == "__main__":
@@ -81,4 +106,5 @@ if __name__ == "__main__":
 
   similarity = tfidf.cosine_similarity(matrix[0][1], matrix[1][1])
   print(f"Similarity between doc1 and doc2: {similarity:.2f}")
+  tfidf.rank_documents("quick fox", top_k=2)
    

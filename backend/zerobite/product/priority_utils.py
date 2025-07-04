@@ -14,7 +14,7 @@ class PriorityQueue:
     if len(self.heap) == 1:
       return self.heap.pop()
     self.swap(0, len(self.heap) - 1)
-    item = self.head.pop()[1]
+    item = self.heap.pop()[1]
     self.shift_down(0)
     return item
   
