@@ -136,26 +136,7 @@ import FilterBar from '../components/FilterBar';
 import './Products.css';
 import Header from '../components/Header';
 
-const categoryNameMap = {
-  1: 'bakery',
-  2: 'restaurant',
-  3: 'convenience_store',
-};
-
 const categories = ['All', 'Bakery', 'Packaged Food', 'Restaurant Meal'];
-
-const getDistanceFromLatLonInKm = (lat1, lon1, lat2, lon2) => {
-  const R = 6371;
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLon = ((lon2 - lon1) * Math.PI) / 180;
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) ** 2;
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
-};
 
 const ProductPage = () => {
   const location = useLocation();
@@ -170,21 +151,23 @@ const ProductPage = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
 
   const [filters, setFilters] = useState({
-    location: '',
-    radius: 5,
     expiry: '',
     priceRange: [0, 1000],
+    radius: 5, // still used to send to backend
   });
 
+  // Fetch products from backend, passing lat, lon, radius
   useEffect(() => {
-    fetch(`/getProducts?lat=${lat}&lon=${lon}`)
+    fetch(
+      `http://127.0.0.1:8000/product/getProducts?lat=${lat}&lon=${lon}&radius=${filters.radius}`
+    )
       .then((res) => res.json())
       .then((data) => {
         setProducts(data);
         setFilteredProducts(data);
       })
       .catch(console.error);
-  }, [lat, lon]);
+  }, [lat, lon, filters.radius]);
 
   useEffect(() => {
     if (searchFromQuery) {
@@ -192,17 +175,22 @@ const ProductPage = () => {
     }
   }, [searchFromQuery]);
 
+  // Frontend filtering: search, category, expiry, price only
   useEffect(() => {
     let filtered = products.filter((product) => {
+      // Search filter (name and category)
       const nameLower = product.name?.toLowerCase() || '';
       const searchLower = searchTerm.toLowerCase();
       const matchesSearch = nameLower.includes(searchLower);
 
-      const productCategory = categoryNameMap[product.category];
+      // Category filter
       const matchesCategory =
         selectedCategory === 'All' ||
-        productCategory === selectedCategory.toLowerCase();
+        (product.category || []).some(
+          (cat) => cat.toLowerCase() === selectedCategory.toLowerCase()
+        );
 
+      // Expiry filter
       const matchesExpiry = (() => {
         if (!filters.expiry) return true;
         const today = new Date();
@@ -215,31 +203,19 @@ const ProductPage = () => {
         return true;
       })();
 
+      // Price range filter
       const [minPrice, maxPrice] = filters.priceRange || [0, 1000];
       const matchesPrice = product.price >= minPrice && product.price <= maxPrice;
 
-      const matchesLocationRadius = (() => {
-        if (!product.lat || !product.lon) return true;
-        const productLat = parseFloat(product.lat);
-        const productLon = parseFloat(product.lon);
-        const distance = getDistanceFromLatLonInKm(lat, lon, productLat, productLon);
-        return distance <= (filters.radius || 5);
-      })();
-
-      return (
-        matchesSearch &&
-        matchesCategory &&
-        matchesExpiry &&
-        matchesPrice &&
-        matchesLocationRadius
-      );
+      return matchesSearch && matchesCategory && matchesExpiry && matchesPrice;
     });
 
     setFilteredProducts(filtered);
-  }, [searchTerm, selectedCategory, filters, products, lat, lon]);
+  }, [searchTerm, selectedCategory, filters, products]);
 
   return (
     <div>
+      
       <div className="options" style={{ margin: '1rem 0' }}>
         {categories.map((category) => (
           <button
@@ -262,18 +238,12 @@ const ProductPage = () => {
 
       <div className="main-content" style={{ display: 'flex', gap: '20px' }}>
         <div className="filters-wrapper">
-          <FilterBar
-            filters={filters}
-            setFilters={setFilters}
-            onApply={() => {}}
-          />
+          <FilterBar filters={filters} setFilters={setFilters} />
         </div>
 
         <div className="products-container">
           {filteredProducts.length > 0 ? (
-            filteredProducts.map((product) => (
-              <Card key={product.id} product={product} />
-            ))
+            filteredProducts.map((product) => <Card key={product.id} product={product} />)
           ) : (
             <p>No products found.</p>
           )}

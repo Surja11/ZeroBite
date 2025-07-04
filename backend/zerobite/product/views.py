@@ -49,7 +49,8 @@ class ProductView(APIView):
       expiry_list.append(days_to_expiry)
 
     max_distance = max(distance_list) if distance_list else 1
-    max_days = max(days_to_expiry) if expiry_list else 1
+    max_days = max(expiry_list) if expiry_list else 1
+
 
     heap = PriorityQueue()
 
@@ -57,11 +58,12 @@ class ProductView(APIView):
       distance = distance_map[product.id]
       days_to_expiry = expiry_map[product.id]
       priority = calc_priority(distance, days_to_expiry, max_distance, max_days)
-      heap.push((priority, product))
+      heap.push(priority, product)
     
     sorted_products = []
     while heap.size()>0:
       product = heap.pop()
+      print("POPPED:", product)
       if product:
         sorted_products.append(product)
 
