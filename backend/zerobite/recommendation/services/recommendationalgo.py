@@ -2,8 +2,8 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 import re, math
-from porterstemmer import *
-from stopwords import *
+from .porterstemmer import *
+from .stopwords import *
 from collections import defaultdict
 from product.priority_utils import *
 
