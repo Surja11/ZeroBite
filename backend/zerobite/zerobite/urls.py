@@ -37,5 +37,6 @@ urlpatterns = [
     path('business/', include('business.urls')),
     path('customer/',include('customer.urls') ),
     path('product/', include('product.urls')),
+    path('recommendation/',include('recommendation.urls')),
     path('add/',include(router.urls)),
 ]+static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
