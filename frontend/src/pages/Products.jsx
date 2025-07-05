@@ -85,7 +85,7 @@
 
 //   return (
 //     <div>
-    
+
 //       <div className="options" style={{ margin: '1rem 0' }}>
 //         {categories.map(category => (
 //           <button
@@ -128,14 +128,13 @@
 // export default ProductPage;
 
 
-
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Card from "../components/ProductCard";
 import FilterBar from "../components/FilterBar";
 import "./Products.css";
 
-const categories = ["All", "Bakery", "Packaged Food", "Restaurant Meal"];
+const categories = ["All"];
 
 const ProductPage = () => {
   const navigate = useNavigate();
@@ -152,47 +151,67 @@ const ProductPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [filters, setFilters] = useState({ expiry: "", priceRange: [0, 1000], radius: 5 });
 
-  // Sync searchTerm if URL changes
+  useEffect(() => {
+    if (!params.get("lat") || !params.get("lon")) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const userLat = position.coords.latitude;
+          const userLon = position.coords.longitude;
+          params.set("lat", userLat);
+          params.set("lon", userLon);
+          navigate(`/products?${params.toString()}`, { replace: true });
+        },
+        (error) => {
+          console.warn("Geolocation failed, defaulting to Kathmandu:", error);
+          params.set("lat", 27.5291);
+          params.set("lon", 84.3542);
+          navigate(`/products?${params.toString()}`, { replace: true });
+        }
+      );
+    }
+  }, []);
+
   useEffect(() => {
     setSearchTerm(params.get("search") || "");
   }, [location.search]);
 
-  // Fetch products when lat, lon, or radius change
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/product/getProducts?lat=${lat}&lon=${lon}&radius=${filters.radius}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setProducts(data);
-        setFilteredProducts(data);
-      })
-      .catch(console.error);
+    if (lat && lon) {
+      fetch(`http://127.0.0.1:8000/product/getProducts?lat=${lat}&lon=${lon}&radius=${filters.radius}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setProducts(data);
+          setFilteredProducts(data);
+        })
+        .catch(console.error);
+    }
   }, [lat, lon, filters.radius]);
 
-  // Filter products based on current state
   useEffect(() => {
     const filtered = products.filter((p) => {
-      const n = p.name?.toLowerCase() || "";
-      const c = (p.category || []).join(" ").toLowerCase();
-      const s = searchTerm.toLowerCase();
+      const name = p.name?.toLowerCase() || "";
+      const categoryString = (p.category || []).join(" ").toLowerCase();
+      const searchLower = searchTerm.toLowerCase();
 
-      const matchesSearch = n.includes(s) || c.includes(s);
-      const matchesCategory = selectedCategory === "All" ||
+      const matchesSearch = name.includes(searchLower) || categoryString.includes(searchLower);
+      const matchesCategory =
+        selectedCategory === "All" ||
         (p.category || []).some((cat) => cat.toLowerCase() === selectedCategory.toLowerCase());
 
       const matchesExpiry = (() => {
         if (!filters.expiry) return true;
         const today = new Date();
         const expiryDate = new Date(p.expiry_date);
-        const d = (expiryDate - today) / (1000 * 60 * 60 * 24);
-        if (filters.expiry === "Today") return d >= 0 && d < 1;
-        if (filters.expiry === "In 3 Days") return d >= 0 && d <= 3;
-        if (filters.expiry === "In a Week") return d >= 0 && d <= 7;
-        if (filters.expiry === "In a Month") return d >= 0 && d <= 30;
+        const diffDays = (expiryDate - today) / (1000 * 60 * 60 * 24);
+        if (filters.expiry === "Today") return diffDays >= 0 && diffDays < 1;
+        if (filters.expiry === "In 3 Days") return diffDays >= 0 && diffDays <= 3;
+        if (filters.expiry === "In a Week") return diffDays >= 0 && diffDays <= 7;
+        if (filters.expiry === "In a Month") return diffDays >= 0 && diffDays <= 30;
         return true;
       })();
 
-      const [min, max] = filters.priceRange;
-      const matchesPrice = p.price >= min && p.price <= max;
+      const [minPrice, maxPrice] = filters.priceRange;
+      const matchesPrice = p.price >= minPrice && p.price <= maxPrice;
 
       return matchesSearch && matchesCategory && matchesExpiry && matchesPrice;
     });
@@ -200,11 +219,10 @@ const ProductPage = () => {
     setFilteredProducts(filtered);
   }, [searchTerm, selectedCategory, filters, products]);
 
-  // Handle location change from FilterBar
-  const updateLocation = (_lat, _lon) => {
+  const updateLocation = (newLat, newLon) => {
     const newParams = new URLSearchParams(location.search);
-    newParams.set("lat", _lat);
-    newParams.set("lon", _lon);
+    newParams.set("lat", newLat);
+    newParams.set("lon", newLon);
     if (searchTerm) newParams.set("search", searchTerm);
     navigate(`/products?${newParams.toString()}`);
   };
@@ -229,6 +247,9 @@ const ProductPage = () => {
             {category}
           </button>
         ))}
+        <div className="product-count">
+          Showing {filteredProducts.length} / {products.length} items
+        </div>
       </div>
 
       <div className="main-content" style={{ display: "flex", gap: "20px" }}>
@@ -245,7 +266,16 @@ const ProductPage = () => {
 
         <div className="products-container">
           {filteredProducts.length > 0 ? (
-            filteredProducts.map((p) => <Card key={p.id} product={p} />)
+            filteredProducts.map((p) => (
+              <Link
+                key={p.id}
+                to={`/product/${p.id}`}
+                state={{ product: p }} // pass entire product object here
+                style={{ textDecoration: "none" }}
+              >
+                <Card product={p} />
+              </Link>
+            ))
           ) : (
             <p>No products found.</p>
           )}
@@ -256,3 +286,5 @@ const ProductPage = () => {
 };
 
 export default ProductPage;
+
+
