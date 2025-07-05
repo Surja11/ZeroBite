@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import main from "/images/main.jpg";
 import { Location } from '../api';
 import { useNavigate } from 'react-router-dom';
@@ -6,15 +6,19 @@ import { useNavigate } from 'react-router-dom';
 function Hero() {
   const navigate = useNavigate();
   const [location, setLocation] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // NEW
+
+  // Check login status on mount
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    setIsLoggedIn(!!token); // Set true if token exists
+  }, []);
 
   const HandleLocation = () => {
-    // ====== NEW: Check if user is logged in by checking token in localStorage ======
-    const token = localStorage.getItem("access_token");  // <-- change here
-    if (!token) {
-      navigate('/login');  // <-- change here: redirect to login if not logged in
-      return;  // stop further execution
+    if (!isLoggedIn) {
+      navigate('/login');
+      return;
     }
-    // ==============================================================================
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
@@ -25,7 +29,7 @@ function Hero() {
           console.log("Received products:", products);
           alert("Location data sent successfully!");
           setLocation("");
-          navigate(`/products?lat=${lat}&lon=${lon}`);  // ← Pass lat/lon here
+          navigate(`/products?lat=${lat}&lon=${lon}`);
         } catch (err) {
           console.error("Error fetching products:", err);
         }
@@ -58,7 +62,11 @@ function Hero() {
               className="flex-grow bg-transparent outline-none px-2 text-gray-800"
             />
             <button
-              className="bg-green-600 text-white px-4 py-1 rounded-full hover:bg-green-700 transition"
+              className={`px-4 py-1 rounded-full transition font-semibold ${
+                isLoggedIn
+                  ? "bg-green-600 text-white hover:bg-green-700"
+                  : "bg-gray-400 text-white cursor-not-allowed"
+              }`}
               onClick={HandleLocation}
             >
               Search

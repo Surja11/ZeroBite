@@ -12,12 +12,15 @@ function Header() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [searchTerm, setSearchTerm] = useState(
+    new URLSearchParams(location.search).get("search") || ""
+  );
+
+  const [showDropdown, setShowDropdown] = useState(false); // NEW
+
   const params = new URLSearchParams(location.search);
   const currentLat = params.get("lat");
   const currentLon = params.get("lon");
-  const initialSearch = params.get("search") || "";
-
-  const [searchTerm, setSearchTerm] = useState(initialSearch);
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
@@ -27,14 +30,16 @@ function Header() {
 
       if (currentLat) newParams.set("lat", currentLat);
       if (currentLon) newParams.set("lon", currentLon);
+      if (trimmed) newParams.set("search", trimmed);
 
-      if (trimmed) {
-        newParams.set("search", trimmed);
-        navigate(`/products?${newParams.toString()}`);
-      } else {
-        navigate(`/products?${newParams.toString()}`);
-      }
+      navigate(`/products?${newParams.toString()}`);
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("access_token"); // clear token
+    setShowDropdown(false);
+    navigate("/");
   };
 
   return (
@@ -44,7 +49,9 @@ function Header() {
           <Link className="logo-link" to="/">
             <img src={zero} alt="Logo" className="logo-img" />
           </Link>
+
           <div className="right-section">
+            {/* Search bar */}
             <div className="search-container">
               <img src={searchicon} alt="Search" className="search-icon" />
               <input
@@ -56,15 +63,38 @@ function Header() {
                 onKeyDown={handleKeyDown}
               />
             </div>
+
+            {/* Cart */}
             <Link to="/cart" style={{ position: "relative" }}>
               <img src={carticon} alt="Cart" className="icon-img cart" />
               {cartItems.length > 0 && (
                 <span className="cart-count">{cartItems.length}</span>
               )}
             </Link>
-            <Link to="/userProfile">
-              <img src={adminLogo} alt="User" className="icon-img" />
-            </Link>
+
+            {/* User Icon with Dropdown */}
+            <div className="relative">
+              <img
+                src={adminLogo}
+                alt="User"
+                className="icon-img cursor-pointer"
+                onClick={() => setShowDropdown(!showDropdown)}
+              />
+
+              {showDropdown && (
+                <div className="absolute right-0 mt-2 w-32 bg-white rounded-md shadow-lg z-50">
+                  <div className="px-4 py-2 text-sm text-gray-800 border-b">
+                    ▼ Profile
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-red-600"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </nav>
