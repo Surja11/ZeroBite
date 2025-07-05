@@ -8,6 +8,7 @@ from collections import defaultdict
 from product.priority_utils import *
 
 
+
 class TFIDF:
   def __init__(self,documents):
     self.documents = documents

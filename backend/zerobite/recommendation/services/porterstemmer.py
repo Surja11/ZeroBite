@@ -1,110 +1,152 @@
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-import re, math
-from porterstemmer import *
-from stopwords import *
-from collections import defaultdict
-from product.priority_utils import *
+import re
 
 
-class TFIDF:
-  def __init__(self,documents):
-    self.documents = documents
-    self.vocab = set()
-    self.stemmer = PorterStemmer()
-    self.processed_documents = {}
-    self.tfidf_matrix = []
-    self.doc_ids = list(documents.keys())
+class PorterStemmer:
 
-  def preprocess(self, text):
-    text = text.lower()
-    text = re.sub(r'[^\w\s]',"",text)
-    tokens = text.split()
-    exclude_stopwords = [token for token in tokens if token not in STOP_WORDS]
-    stemmed_words = [self.stemmer.stem(word) for word in exclude_stopwords]
-    return stemmed_words
+  def __init__(self):
+    self.vowels = {'a','e','i','o','u'}
+
+  def countVC(self, word):
+    count = 0
+    prev_vow = False
+    for char in word:
+      if char in self.vowels:
+        prev_vow = True
+      else:
+        if prev_vow:
+          count += 1
+          prev_vow = False
+    return count
   
-  def build_vocab(self):
-    for doc_id, text in self.documents.items():
-      tokens = self.preprocess(text)
-      self.processed_documents[doc_id] = tokens
-      self.vocab.update(tokens)
-    self.vocab = sorted(list(self.vocab))
+  def containsVowel(self, word):
+    for char in word:
+      if char in self.vowels:
+        return True
+  
+  def cvc(self, word):
+    if len(word)<3:
+      return False
+    if word[-3] not in self.vowels:
+      if word[-2] in self.vowels:
+        if word[-1] not in self.vowels and word[-1] not in {'w','x','y'}:
+          return True
+    return False
+  
+  def dcandnotLSZ(self, word):
+    if len(word)<2:
+      return False
+    return word[-1] == word [-2] and word [-1] not in {'l', 's', 'z'}
+  
+  def dc(self, word):
+    return word[-1] == word[-2]
   
 
-  def compute_tf(self, document):
-    tf = defaultdict(float)
-    for term in document:
-      tf[term] += 1
-    total_terms = len(document)
-    for term in tf:
-      tf[term] = tf[term]/total_terms
-    return tf
+
+
+
+  def stem(self, word):
+    word = word.lower()
+
+    if word.endswith('sses') or word.endswith('ies'):
+      word =  word[:-2]
+    elif word.endswith('s') and not word.endswith('ss'):
+      word = word[:-1]
+
+  
+    if word.endswith('eed'):
+      if self.countVC(word[:-3])>0:
+        word = word[:-1]
+    
+    elif re.search(r'[aeiou].*(ed|ing)$', word):
+      word = re.sub(r'(ed|ing)$','',word)
+      if word.endswith('at') or word.endswith('bl') or word.endswith('iz'):
+        word += 'e'
+      
+      elif self.dcandnotLSZ(word):
+        word = word[:-1]
+
+      elif self.countVC(word) == 1 and self.cvc(word):
+        word += 'e'
     
 
+    if word[-1] == 'y' and self.containsVowel(word[:-1]):
+      word = word[:-1] + 'i'
 
-  def compute_idf(self):
-    idf = {}
-    total_documents = len(self.processed_documents)
-    for term in self.vocab:
-      token_in_doc_count= sum(1 for tokens in self.processed_documents.values() if term in tokens)
-      idf[term] = math.log((total_documents+1)/(token_in_doc_count+1))+1
-    return idf
+
+    suffixes2 = {
+      "ational":"ate",
+      "tional": "tion",
+      "enci": "ence",
+      "anci": "ance",
+      "izer":"ize",
+      "abli":"able",
+      "alli":"al",
+      "entli":"ent",
+      "eli":"e",
+      "ousli":"ous",
+      "ization":"ize",
+      "ation":"ate",
+      "ator":"ate",
+      "alism":"al",
+      "iveness": "ive",
+      "fulness":"ful",
+      "ousness":"ous",
+      "aliti":"al",
+      "iviti":"ive",
+      "biliti":"ble"
+      }
     
-  def compute_tfidf(self):
-    self.build_vocab()
-    self.idf = self.compute_idf()
+    for key in suffixes2:
+      if word.endswith(key):
+        stem = word[:-len(key)]
+        if self.countVC(stem)>0:
+          word = stem + suffixes2[key]
+
+    suffixes3  = {
+      "icate":"ic",
+      "ative":"",
+      "alize":"al",
+      "iciti": "ic",
+      "ical":"ic",
+      "ful":"",
+      "ness":""
+    }
+    for key in suffixes3:
+      if word.endswith(key):
+        stem = word[:-len(key)]
+        if self.countVC(stem)>0:
+          word = stem + suffixes3[key]
+
+    suffixes4 = [
+      "al", "ance","able","ant","ate",
+      "ence","er","ement","ment","ent",
+      "ic","ible","ism","iti","ive","ize",
+      "ous","ou","ion"
+    ]
+    for key in suffixes4:
+      if word.endswith(key):
+        stem = word[:-len(key)]
+        if (key) == "ion" and stem and stem[-1] not in "st":
+          continue
+        if self.countVC(stem) > 1:
+          word = stem
+
+    if word.endswith("e"):
+      m = self.countVC(word[:-1])
+      if m>1 or(m == 1 and not self.cvc(word[:-1])):
+        word = word[:-1]
+      
     
-    for doc_id in self.doc_ids:
-        tf = self.compute_tf(self.processed_documents[doc_id])
-        tfidf_vector = [tf.get(term, 0) * self.idf.get(term, 0) for term in self.vocab]
-        self.tfidf_matrix.append((doc_id, tfidf_vector))
-    
-    return self.tfidf_matrix
-
-  def cosine_similarity(self, vec1, vec2):
-    dot_product = sum(a * b for a, b in zip(vec1, vec2))
-    norm1 = math.sqrt(sum(a * a for a in vec1))
-    norm2 = math.sqrt(sum(b * b for b in vec2))
-    if norm1 == 0 or norm2 == 0:
-        return 0.0
-    return dot_product / (norm1 * norm2)
-  
-  def query_vector(self, query):
-    tokens = self.preprocess(query)
-    query_tf = self.compute_tf(tokens)
-    tfidf = [query_tf.get(term, 0) * self.idf.get(term,0) for term in self.vocab]
-    return tfidf
-  
-  def rank_documents(self, query, top_k  =7):
-    query_vector = self.query_vector(query)
-    pq = PriorityQueue()
-
-    for doc_id, doc_vec in self.tfidf_matrix:
-      similarity = self.cosine_similarity(query_vector, doc_vec)
-      pq.push(-similarity, (doc_id, similarity))
-
-    for _ in range(min(top_k, pq.size())):
-      doc_id, sim = pq.pop()
-      print(f"{doc_id} -> Similarity: {sim:.2f}")
-
-
-
+    if self.countVC(word)>1 and self.dc(word) and word.endswith("l"):
+      word = word[:-1]
+    return word
 
 
 if __name__ == "__main__":
-  documents = {
-    "doc1": "The quick brown fox jumps over the lazy dog",
-    "doc2": "Never jump over the lazy dog quickly",
-    "doc3": "Fast foxes and quick dogs"
-  }
+    stemmer = PorterStemmer()
+    print(stemmer.stem("development"))
+    print(stemmer.stem("relational"))
+    print(stemmer.stem("happiness"))
+    print(stemmer.stem("agreed"))
+    print(stemmer.stem("conflated"))
 
-  tfidf = TFIDF(documents)
-  matrix = tfidf.compute_tfidf()
-
-
-  similarity = tfidf.cosine_similarity(matrix[0][1], matrix[1][1])
-  print(f"Similarity between doc1 and doc2: {similarity:.2f}")
-  tfidf.rank_documents("quick fox", top_k=2)
-   
