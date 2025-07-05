@@ -151,6 +151,9 @@ const ProductPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [filters, setFilters] = useState({ expiry: "", priceRange: [0, 1000], radius: 5 });
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 16;
+
   useEffect(() => {
     if (!params.get("lat") || !params.get("lon")) {
       navigator.geolocation.getCurrentPosition(
@@ -217,6 +220,7 @@ const ProductPage = () => {
     });
 
     setFilteredProducts(filtered);
+    setCurrentPage(1); // reset to first page on filter/search change
   }, [searchTerm, selectedCategory, filters, products]);
 
   const updateLocation = (newLat, newLon) => {
@@ -227,32 +231,34 @@ const ProductPage = () => {
     navigate(`/products?${newParams.toString()}`);
   };
 
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * productsPerPage,
+    currentPage * productsPerPage
+  );
+
   return (
     <div>
-      <div className="options" style={{ margin: "1rem 0" }}>
-        {categories.map((category) => (
-          <button
-            key={category}
-            onClick={() => setSelectedCategory(category)}
-            style={{
-              backgroundColor: selectedCategory === category ? "#7bb400" : "",
-              color: selectedCategory === category ? "white" : "",
-              marginRight: "10px",
-              padding: "6px 14px",
-              borderRadius: "12px",
-              border: "1px solid #7bb400",
-              cursor: "pointer",
-            }}
-          >
-            {category}
-          </button>
-        ))}
-        <div className="product-count">
-          Showing {filteredProducts.length} / {products.length} items
+      <div className="options">
+        <div className="category-buttons">
+          {categories.map((category) => (
+            <button
+              key={category}
+              className={`category-button ${selectedCategory === category ? "selected" : ""}`}
+              onClick={() => setSelectedCategory(category)}
+            >
+              {category}
+            </button>
+          ))}
         </div>
+        <div className="product-count">
+          Showing {paginatedProducts.length} / {filteredProducts.length} products
+        </div>
+
+
       </div>
 
-      <div className="main-content" style={{ display: "flex", gap: "20px" }}>
+      <div className="main-content">
         <div className="filters-wrapper">
           <FilterBar
             filters={filters}
@@ -265,12 +271,12 @@ const ProductPage = () => {
         </div>
 
         <div className="products-container">
-          {filteredProducts.length > 0 ? (
-            filteredProducts.map((p) => (
+          {paginatedProducts.length > 0 ? (
+            paginatedProducts.map((p) => (
               <Link
                 key={p.id}
                 to={`/product/${p.id}`}
-                state={{ product: p }} // pass entire product object here
+                state={{ product: p }}
                 style={{ textDecoration: "none" }}
               >
                 <Card product={p} />
@@ -281,10 +287,31 @@ const ProductPage = () => {
           )}
         </div>
       </div>
+
+      {totalPages > 1 && (
+        <div className="pagination">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+            disabled={currentPage === 1}
+          >
+            ← Prev
+          </button>
+          <span>
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+            disabled={currentPage === totalPages}
+          >
+            Next →
+          </button>
+        </div>
+      )}
     </div>
   );
 };
 
 export default ProductPage;
+
 
 
