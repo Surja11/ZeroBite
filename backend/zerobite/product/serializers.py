@@ -10,6 +10,7 @@ class ProductSerializer(serializers.ModelSerializer):
      slug_field = 'name'
   )
   address = serializers.SerializerMethodField()
+  
 
   class Meta:
     model = Product
