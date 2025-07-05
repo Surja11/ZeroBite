@@ -8,6 +8,14 @@ function Hero() {
   const [location, setLocation] = useState("");
 
   const HandleLocation = () => {
+    // ====== NEW: Check if user is logged in by checking token in localStorage ======
+    const token = localStorage.getItem("access_token");  // <-- change here
+    if (!token) {
+      navigate('/login');  // <-- change here: redirect to login if not logged in
+      return;  // stop further execution
+    }
+    // ==============================================================================
+
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const lat = position.coords.latitude;
@@ -17,7 +25,7 @@ function Hero() {
           console.log("Received products:", products);
           alert("Location data sent successfully!");
           setLocation("");
-           navigate(`/products?lat=${lat}&lon=${lon}`);  // ← Pass lat/lon here
+          navigate(`/products?lat=${lat}&lon=${lon}`);  // ← Pass lat/lon here
         } catch (err) {
           console.error("Error fetching products:", err);
         }

@@ -16,7 +16,7 @@ import CheckoutPage from "./pages/CheckoutPage";
 function AppRouter() {
   const location = useLocation();
 
-  const hideHeaderPaths = ["/", "/login", "/register","/BusinessAcc"];
+  const hideHeaderPaths = ["/", "/login", "/register","/BusinessAcc","/home"];
   const shouldShowHeader = !hideHeaderPaths.includes(location.pathname);
 
   return (
@@ -34,6 +34,8 @@ function AppRouter() {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
+  
+
       </Routes>
     </>
   );
