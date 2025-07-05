@@ -57,6 +57,49 @@ class ProductRecommendationView(APIView):
     return Response(serializer.data)
     
 
+# class ProductRecommendationView(APIView):
+#     def get(self, request):
+#         products = Product.objects.all()
+#         documents = build_documents(products)
 
+#         tfidf = TFIDF(documents)
+#         tfidf.compute_tfidf()
+
+#         query = request.query_params.get("query")
+#         product_id = request.query_params.get("product_id")
+
+#         if product_id:
+#             try:
+                
+#                 product_vector = next(
+#                     (vec for doc_id, vec in tfidf.tfidf_matrix if doc_id == str(product_id)),
+#                     None
+#                 )
+#                 if product_vector is None:
+#                     return Response({"error": "Product not found in TF-IDF matrix"}, status=404)
+                
+#                 query_vector = product_vector  
+#             except Product.DoesNotExist:
+#                 return Response({"error": "Product not found"}, status=404)
+#         else:
+#             query_vector = tfidf.query_vector(query)
+
+#         pq = PriorityQueue()
+#         for doc_id, doc_vec in tfidf.tfidf_matrix:
+#             if doc_id == str(product_id):
+#                 continue
+#             similarity = tfidf.cosine_similarity(query_vector, doc_vec)
+#             pq.push(-similarity, (doc_id, similarity))
+
+#         product_map = {str(p.id): p for p in products}
+#         results = []
+#         for _ in range(min(7, pq.size())):
+#             doc_id, sim = pq.pop()
+#             product = product_map[doc_id]
+#             product.similarity = sim
+#             results.append(product)
+
+#         serializer = ProductRecommendationSerializer(results, many=True)
+#         return Response(serializer.data)
 
     

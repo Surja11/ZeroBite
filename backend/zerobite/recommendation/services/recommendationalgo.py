@@ -7,8 +7,6 @@ from .stopwords import *
 from collections import defaultdict
 from product.priority_utils import *
 
-
-
 class TFIDF:
   def __init__(self,documents):
     self.documents = documents
@@ -89,8 +87,6 @@ class TFIDF:
     for _ in range(min(top_k, pq.size())):
       doc_id, sim = pq.pop()
       print(f"{doc_id} -> Similarity: {sim:.2f}")
-
-
 
 
 
