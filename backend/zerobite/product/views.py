@@ -10,7 +10,7 @@ from business.permissons import *
 from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import api_view,permission_classes
-import heapq
+from django.core.cache import cache
 # Create your views here.
 
 @api_view(['GET'])
@@ -24,10 +24,16 @@ def showCategory(request):
 
 @api_view(['GET'])
 def showProduct(request, pk):
-  product = get_object_or_404(Product, pk = pk)
-  serializer = ProductSerializer(product)
-  return Response(serializer.data)
+    cache_key = f"product_detail_{pk}"
+    cached_data = cache.get(cache_key)
+    if cached_data:
+        print(" Cache hit")
+        return Response(cached_data)
 
+    product = get_object_or_404(Product, pk=pk)
+    serializer = ProductSerializer(product)
+    cache.set(cache_key, serializer.data, timeout=86400) 
+    return Response(serializer.data)
 # class StandardResultsSetPagination(PageNumberPagination):
 #     page_size = 10  
 #     page_size_query_param = 'page_size'  
@@ -88,37 +94,84 @@ def showProduct(request, pk):
 #     serializer = ProductSerializer(sorted_products, many = True)
 #     return Response(serializer.data)
 
+# class ProductView(APIView):
+#     def get(self, request):
+       
+#         products = Product.objects.select_related('business').only(
+#             'id', 'expiry_date', 'business__store_latitude', 'business__store_longitude'
+#         ).all()
+        
+#         user_lat = float(request.query_params.get('lat', 0))
+#         user_lon = float(request.query_params.get('lon', 0))
+        
+
+#         distances = batch_haversine(user_lat, user_lon, products)
+#         expiry_days = [(p.expiry_date - date.today()).days for p in products]
+        
+#         max_distance = max(distances) if distances else 1
+#         max_days = max(expiry_days) if expiry_days else 1
+        
+
+#         heap = PriorityQueue()
+#         for product, distance, days in zip(products, distances, expiry_days):
+#             priority = calc_priority(distance, days, max_distance, max_days)
+#             heap.push(priority, product)
+        
+
+#         sorted_products = []
+#         while heap.size() > 0 and len(sorted_products) < 100:
+#             product = heap.pop()
+#             if product:
+#                 sorted_products.append(product)
+        
+#         serializer = ProductSerializer(sorted_products, many=True)
+#         return Response(serializer.data)
+
+
+
+
 class ProductView(APIView):
     def get(self, request):
-       
+        user_lat = float(request.query_params.get('lat', 0))
+        user_lon = float(request.query_params.get('lon', 0))
+
+        cache_key = f"products_{round(user_lat, 3)}_{round(user_lon, 3)}"
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            print("Cache hit")
+            return Response(cached_data)
+
+        print("Cache miss — computing and caching")
+
+
         products = Product.objects.select_related('business').only(
             'id', 'expiry_date', 'business__store_latitude', 'business__store_longitude'
         ).all()
-        
-        user_lat = float(request.query_params.get('lat', 0))
-        user_lon = float(request.query_params.get('lon', 0))
-        
 
+    
         distances = batch_haversine(user_lat, user_lon, products)
         expiry_days = [(p.expiry_date - date.today()).days for p in products]
-        
+
         max_distance = max(distances) if distances else 1
         max_days = max(expiry_days) if expiry_days else 1
-        
 
+    
         heap = PriorityQueue()
         for product, distance, days in zip(products, distances, expiry_days):
             priority = calc_priority(distance, days, max_distance, max_days)
             heap.push(priority, product)
-        
 
         sorted_products = []
         while heap.size() > 0 and len(sorted_products) < 100:
             product = heap.pop()
             if product:
                 sorted_products.append(product)
-        
+
+ 
         serializer = ProductSerializer(sorted_products, many=True)
+
+        cache.set(cache_key, serializer.data, timeout=86400)
+
         return Response(serializer.data)
 
 

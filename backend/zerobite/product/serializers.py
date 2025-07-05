@@ -9,14 +9,15 @@ class ProductSerializer(serializers.ModelSerializer):
      queryset = Category.objects.all(),
      slug_field = 'name'
   )
+  address = serializers.SerializerMethodField()
 
   class Meta:
     model = Product
     fields = ['id','business','category',
   'name','description','price','image',
   'manufactured_date','expiry_date','stock',
-  'available','discounted_price']
-    read_only_fields = ('business', 'discounted_price')
+  'available','discounted_price','address']
+    read_only_fields = ('business', 'discounted_price','address')
   
 
   def get_discounted_price(self, obj):
@@ -33,6 +34,7 @@ class ProductSerializer(serializers.ModelSerializer):
   
   def create(self, validated_data):
     validated_data.pop('discounted_price', None)
+    validated_data.pop('address',None)
     category = validated_data.pop('category', [])
     user = self.context['request'].user
     business = self._get_business_instance(user)
@@ -42,6 +44,11 @@ class ProductSerializer(serializers.ModelSerializer):
     product =  Product.objects.create(**validated_data)
     product.category.set(category)
     return product
+  
+  def get_address(self,obj):
+     business = obj.business
+     address = business.store_address
+     return address
   
   def _get_business_instance(self, user):
         try:
