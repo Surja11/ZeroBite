@@ -10,9 +10,9 @@ function Login() {
   const [error, setError] = useState(null)
   const [isLoading, setIsLoading] = useState(false);
 
-  const naviagte = useNavigate()
+  const navigate = useNavigate()
   const HandleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     setIsLoading(true);
     setError(null)
 
@@ -27,9 +27,9 @@ function Login() {
 
       if (user.user_type === "business") {
 
-        naviagte('/business')
+        navigate('/business')
       } else if (user.user_type === "customer") {
-        naviagte('/products')
+        navigate('/')
 
       }
     } catch (error) {
