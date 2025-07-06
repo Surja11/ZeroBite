@@ -38,6 +38,7 @@ def showProduct(request, pk):
     serializer = ProductSerializer(product)
     cache.set(cache_key, serializer.data, timeout=86400) 
     return Response(serializer.data)
+
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 15  
     
