@@ -39,8 +39,8 @@ def showProduct(request, pk):
     cache.set(cache_key, serializer.data, timeout=86400) 
     return Response(serializer.data)
 
-class StandardResultsSetPagination(PageNumberPagination):
-    page_size = 15  
+# class StandardResultsSetPagination(PageNumberPagination):
+#     page_size = 15  
     
 
 
@@ -185,15 +185,15 @@ class ProductView(APIView):
                 sorted_products.append(product)
         print("product sorted")
 
-        paginator = StandardResultsSetPagination()
-        paginated_products = paginator.paginate_queryset(sorted_products,request)
+        # paginator = StandardResultsSetPagination()
+        # paginated_products = paginator.paginate_queryset(sorted_products,request)
 
  
-        serializer = ProductSerializer(paginated_products, many=True)
+        serializer = ProductSerializer(sorted_products, many=True)
 
         cache.set(cache_key, serializer.data, timeout=86400)
 
-        return paginator.get_paginated_response(serializer.data)
+        return Response(serializer.data)
 
 
 
