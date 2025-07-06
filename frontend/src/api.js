@@ -142,18 +142,23 @@ export const fetchAddressFromLatLng = async (lat, lng) => {
 //location search
 
 export const Location = async (lat, lon) => {
+  const token = localStorage.getItem("access_token"); // Get token
   try {
     const res = await axios.get(`${API_URL}product/getProducts`, {
-      params: { lat, lon }
+      params: { lat, lon },
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }), // Include token if available
+      },
     });
     console.log('Sorted Products:', res.data);
-    return res.data;  // Return the products to caller
+    return res.data;
   } catch (error) {
     console.error("Failed to load", error);
     console.error('Error fetching products:', error.response?.data || error.message);
     throw error;
   }
 };
+
 
 
 // http://127.0.0.1:8000/customer/customerregister/

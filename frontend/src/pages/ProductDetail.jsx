@@ -16,15 +16,29 @@ const ProductDetail = () => {
   const [toastMsg, setToastMsg] = useState("");
   const [recommended, setRecommended] = useState([]);
 
-  useEffect(() => {
-    fetch(`http://localhost:8000/product/getProducts/${id}/`)
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch product");
-        return res.json();
-      })
-      .then((data) => setProduct(data))
-      .catch(console.error);
-  }, [id]);
+ useEffect(() => {
+  const token = localStorage.getItem("access_token");
+
+  if (!token) {
+    console.error("No token found.");
+    return;
+  }
+
+  fetch(`http://localhost:8000/product/getProducts/${id}/`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error("Failed to fetch product");
+      return res.json();
+    })
+    .then((data) => setProduct(data))
+    .catch((err) => console.error("Error fetching product:", err));
+}, [id]);
+
 
   useEffect(() => {
     if (id) {
@@ -64,7 +78,7 @@ const ProductDetail = () => {
           />
           <div className="product-meta">
             <h1>{product.name}</h1>
-            <p><strong>Location:</strong> {product.location || "N/A"}</p>
+            <p><strong>Location:</strong> {product.address || "N/A"}</p>
             <p><strong>Expires:</strong> {new Date(product.expiry_date).toDateString()}</p>
             <p><strong>Price:</strong> Rs. {product.price}</p>
             <p><strong>Description:</strong><br />{product.description}</p>

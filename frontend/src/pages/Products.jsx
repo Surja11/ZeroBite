@@ -178,17 +178,35 @@ const ProductPage = () => {
     setSearchTerm(params.get("search") || "");
   }, [location.search]);
 
-  useEffect(() => {
-    if (lat && lon) {
-      fetch(`http://127.0.0.1:8000/product/getProducts?lat=${lat}&lon=${lon}&radius=${filters.radius}`)
-        .then((res) => res.json())
-        .then((data) => {
-          setProducts(data);
-          setFilteredProducts(data);
-        })
-        .catch(console.error);
-    }
-  }, [lat, lon, filters.radius]);
+ useEffect(() => {
+  const token = localStorage.getItem("access_token");
+
+  if (lat && lon && token) {
+    const url = `http://127.0.0.1:8000/product/getProducts/?lat=${lat}&lon=${lon}`;
+
+    fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        setProducts(data);
+        setFilteredProducts(data);
+      })
+      .catch((err) => {
+        console.error("Error fetching products:", err);
+      });
+  }
+}, [lat, lon]);
+
 
   useEffect(() => {
     const filtered = products.filter((p) => {
