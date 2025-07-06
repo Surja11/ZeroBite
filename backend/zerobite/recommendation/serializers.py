@@ -8,3 +8,4 @@ class ProductRecommendationSerializer(serializers.ModelSerializer):
   class Meta:
     model = Product
     fields = ['id',  'business','category', 'name' ,'price' ,'image' ,'manufactured_date','expiry_date','available','brand', 'view_count', 'similarity','score']
+    

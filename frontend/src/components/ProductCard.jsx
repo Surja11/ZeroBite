@@ -106,8 +106,6 @@ const Card = ({ product }) => {
     expiryText = '< 1 hour';
   }
 
-  // If your backend serves relative URLs like /media/products/xxx.jpg,
-  // prepend your backend domain or use an environment variable
   const imageUrl = image ? `http://localhost:8000${image}` : '/fallback.jpg';
 
   return (
@@ -135,17 +133,18 @@ const Card = ({ product }) => {
                 className="cart-button"
                 style={{ backgroundColor: '#AEB18A' }}
                 onClick={handleAddToCart}
+                aria-label={`Add ${name} to cart`}
               >
                 <img className="small-cart" src={cartIcon} alt="cart icon" />
               </button>
-              <button className="expiry-button">
+              <button className="expiry-button" aria-label="Expiry time">
                 <img className="expiry-button" src={timer} alt="expiry timer" />
                 <p style={{ fontSize: '12px' }}>{expiryText}</p>
               </button>
             </div>
             <div className="card-footer">
               <div className="rating">⭐(4.2)</div>
-              {/* Remove location since backend doesn't provide it */}
+              {/* Removed location as backend doesn't provide */}
             </div>
           </div>
         </div>

@@ -10,6 +10,7 @@ class ProductSerializer(serializers.ModelSerializer):
      slug_field = 'name'
   )
   address = serializers.SerializerMethodField()
+  
 
   class Meta:
     model = Product
@@ -31,7 +32,10 @@ class ProductSerializer(serializers.ModelSerializer):
     elif days_to_expiry<11:
       return obj.price * 0.9
     return obj.price
+
   
+
+
   def create(self, validated_data):
     validated_data.pop('discounted_price', None)
     validated_data.pop('address',None)

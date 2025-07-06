@@ -11,6 +11,8 @@ from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import api_view,permission_classes
 from django.core.cache import cache
+from django.utils import timezone
+from django.db.models import Q
 # Create your views here.
 
 @api_view(['GET'])
@@ -142,12 +144,15 @@ class ProductView(APIView):
             return Response(cached_data)
 
         print("Cache miss — computing and caching")
-
+        today= timezone.now().date()
+        Product.objects.filter(
+        Q(expiry_date__lte=today) & ~Q(category__name__in=['Fast Food','Indian Cuisine','Chinese Cuisine','Continental','Nepali Khana']) |
+        Q(expiry_date__lt=today, category__name__in=['Fast Food','Indian Cuisine','Chinese Cuisine','Continental','Nepali Khana'])
+        ).delete()
 
         products = Product.objects.select_related('business').only(
             'id', 'expiry_date', 'business__store_latitude', 'business__store_longitude'
         ).all()
-
     
         distances = batch_haversine(user_lat, user_lon, products)
         expiry_days = [(p.expiry_date - date.today()).days for p in products]
