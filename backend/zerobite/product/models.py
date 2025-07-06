@@ -19,7 +19,7 @@ class Category(models.Model):
 
 class Product(models.Model):
   business = models.ForeignKey(Business, on_delete= models.CASCADE, related_name = "products")
-  category = models.ManyToManyField(Category, related_name = "products", blank = True)
+  category = models.ForeignKey(Category, related_name = "products", blank = True, on_delete = models.SET_NULL, null = True)
   name = models.CharField(max_length=50)
   description = models.TextField()
   price = models.FloatField()

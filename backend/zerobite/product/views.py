@@ -13,6 +13,7 @@ from rest_framework.decorators import api_view,permission_classes
 from django.core.cache import cache
 from django.utils import timezone
 from django.db.models import Q
+from rest_framework.permissions import IsAuthenticated
 # Create your views here.
 
 @api_view(['GET'])
@@ -25,6 +26,7 @@ def showCategory(request):
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def showProduct(request, pk):
     cache_key = f"product_detail_{pk}"
     cached_data = cache.get(cache_key)
@@ -36,10 +38,9 @@ def showProduct(request, pk):
     serializer = ProductSerializer(product)
     cache.set(cache_key, serializer.data, timeout=86400) 
     return Response(serializer.data)
-# class StandardResultsSetPagination(PageNumberPagination):
-#     page_size = 10  
-#     page_size_query_param = 'page_size'  
-#     max_page_size = 50
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 15  
+    
 
 
 # class ProductView(APIView):
@@ -133,9 +134,12 @@ def showProduct(request, pk):
 
 
 class ProductView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         user_lat = float(request.query_params.get('lat', 0))
         user_lon = float(request.query_params.get('lon', 0))
+
+        print(user_lat, user_lon)
 
         cache_key = f"products_{round(user_lat, 3)}_{round(user_lon, 3)}"
         cached_data = cache.get(cache_key)
@@ -150,10 +154,16 @@ class ProductView(APIView):
         Q(expiry_date__lt=today, category__name__in=['Fast Food','Indian Cuisine','Chinese Cuisine','Continental','Nepali Khana'])
         ).delete()
 
-        products = Product.objects.select_related('business').only(
-            'id', 'expiry_date', 'business__store_latitude', 'business__store_longitude'
+        print("product deleted")
+
+
+        products = Product.objects.select_related('business','category').only(
+            'id', 'expiry_date', 'business__store_latitude', 'business__store_longitude',
+            'category__name',
         ).all()
     
+        print("product received")
+
         distances = batch_haversine(user_lat, user_lon, products)
         expiry_days = [(p.expiry_date - date.today()).days for p in products]
 
@@ -165,19 +175,24 @@ class ProductView(APIView):
         for product, distance, days in zip(products, distances, expiry_days):
             priority = calc_priority(distance, days, max_distance, max_days)
             heap.push(priority, product)
+        print("pushed in priority queue")
 
         sorted_products = []
         while heap.size() > 0 and len(sorted_products) < 100:
             product = heap.pop()
             if product:
                 sorted_products.append(product)
+        print("product sorted")
+
+        paginator = StandardResultsSetPagination()
+        paginated_products = paginator.paginate_queryset(sorted_products,request)
 
  
-        serializer = ProductSerializer(sorted_products, many=True)
+        serializer = ProductSerializer(paginated_products, many=True)
 
         cache.set(cache_key, serializer.data, timeout=86400)
 
-        return Response(serializer.data)
+        return paginator.get_paginated_response(serializer.data)
 
 
 

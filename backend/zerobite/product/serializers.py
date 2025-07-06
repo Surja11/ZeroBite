@@ -5,12 +5,11 @@ from datetime import date
 class ProductSerializer(serializers.ModelSerializer):
   discounted_price = serializers.SerializerMethodField()
   category =  serializers.SlugRelatedField(
-     many = True,
+
      queryset = Category.objects.all(),
      slug_field = 'name'
   )
   address = serializers.SerializerMethodField()
-  
 
   class Meta:
     model = Product
@@ -46,7 +45,7 @@ class ProductSerializer(serializers.ModelSerializer):
       raise serializers.ValidationError("User is not registered as a business.")
     validated_data['business'] = business
     product =  Product.objects.create(**validated_data)
-    product.category.set(category)
+   
     return product
   
   def get_address(self,obj):
