@@ -6,7 +6,7 @@ import twitter from "/images/twitter.png";
 function Footer() {
   return (
     <div>
-        <div className='bg-[#7bb400] flex flex-col justify-evenly items-center space-y-5 py-5 mt-10'>
+        <div className='bg-[#7bb400] flex flex-col justify-evenly items-center space-y-5 py-5 '>
 <div>
     <img src={zero} alt="zero.png" className='w-25 lg:w-30' />
     <p className='font-bold ml-4  text-[14px] lg:text-[18px]'>Follow us </p>

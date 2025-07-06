@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import Vector from "/images/Vector.png";
 import down from "/images/down.png";
+import zero from "/images/zero.png";
 import dropup from "/images/dropup.png";
 import order from "/images/order.png";
 import product from "/images/product.png";
@@ -10,7 +11,9 @@ import { useState } from "react";
 import ProductDetail from "../components/ProductDetail";
 import { specificProduct } from "../api";
 import { getProduct } from "../api";
+import { Link
 
+ } from "react-router-dom";
 function Business() {
   const [dropmen, setIsDrop] = useState(false);
   const [isActiveComponent,setIsActiveComponent]= useState(null)
@@ -55,18 +58,30 @@ setSelectedProduct(data)
     }
 
   return (
+<>
+	<div className="flex justify-between bg-gray-200 px-4 py-3">
+				<div className="flex items-center space-x-4">
+
+					<Link to="/">
+						<img
+							src={zero}
+							alt="logo"
+							className="w-15 m-0 p-0 cursor-pointer"
+						/>
+					</Link>
+				
+				</div>
+</div>
     <div className="flex min-h-screen">
 
     <div className="flex flex-col min-h-screen bg-gray-100 w-65  text-gray-600">
-      <hr className="text-gray-300" />
+     
       <div className="bg-[#f8f8fa] py-1 flex flex-col items-start   space-y-3">
-        <div className="flex items-center space-x-3 w-full px-5 py-2 hover:bg-gray-300 cursor-pointer">
-          <div>
-            <img src={Vector} alt="profile" className="w-4" />
-          </div>
+        {/* <div className="flex items-center space-x-3 w-full px-5 py-2 hover:bg-gray-300 cursor-pointer">
+         
           <div>Business name</div>
-        </div>
-        <hr className="text-gray-300 w-full" />
+        </div> */}
+     
 
         <div className="flex items-center justify-between w-full px-5 py-1 hover:bg-gray-300 cursor-pointer">
           <div className="flex items-center space-x-3">
@@ -101,7 +116,7 @@ setSelectedProduct(data)
         </div>
 
         <div className="flex items-center space-x-3 w-full px-5 py-2 hover:bg-gray-300 cursor-pointer ">
-          <span className="px-5">Settings</span>
+          {/* <span className="px-5">Settings</span> */}
         </div>
       </div>
     
@@ -117,6 +132,7 @@ setSelectedProduct(data)
     </div>
      
     </div>
+</>
   );
 }
 

@@ -12,8 +12,8 @@ function Home() {
         <Hero/>
     <Link to="/">
     
-{/* <MiddleComponent/> */}
-    <Footer/>
+<MiddleComponent/>
+    {/* <Footer/> */}
     </Link>
         </>
   )
