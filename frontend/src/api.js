@@ -118,6 +118,26 @@ export const getProduct = async ()=>{
   }
 }
 
+//get speciif product
+export const specificProduct = async (id)=>{
+  const token =localStorage.getItem("access_token")
+  try{
+    const response = await axios.get(`${API_URL}add/productapi/${id}`,
+      {
+				headers: {
+              ...(token && { Authorization: `Bearer ${token}` }), // include token
+      
+				},
+			}
+    )
+    return response.data;
+  }catch(err){
+	console.error("Failed to get product:", err.response?.data || err.message);
+
+		throw err;
+  }
+}
+
 //api for admin oage
 
 

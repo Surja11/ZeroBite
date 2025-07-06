@@ -8,25 +8,50 @@ import ProductList from "../components/ProductList";
 import AddProduct from "../components/AddProduct";
 import { useState } from "react";
 import ProductDetail from "../components/ProductDetail";
+import { specificProduct } from "../api";
+import { getProduct } from "../api";
 
 function Business() {
   const [dropmen, setIsDrop] = useState(false);
   const [isActiveComponent,setIsActiveComponent]= useState(null)
-  const [AddProductComponent, setAddProduct] = useState(null)
 const [selectedProduct, setSelectedProduct] = useState(null)
+const [products, setProducts] = useState([]);
 
+useEffect(() => {
+  fetchProducts();
+}, []);
+
+const fetchProducts = async () => {
+  try {
+    const data = await getProduct();
+    setProducts(data);
+  } catch (err) {
+    console.error("Failed to fetch products", err);
+  }
+};
   useEffect(()=>{
 setIsActiveComponent("productList")
   },[])
   const HandleDrop = () => {
     setIsDrop((prev) => !prev);
   };
-  const handleProductClick=()=> {
-setIsActiveComponent("productList")
-    }
+  const handleProductClick = () => {
+  setSelectedProduct(null);
+  setIsActiveComponent("productList");
+};
+
 
     const HandleAddProducts=()=>{
       setIsActiveComponent("addProduct")
+    }
+    const handleSpecific = async (id)=>{
+try{
+  const data = await specificProduct(id)
+console.log(data)
+setSelectedProduct(data)
+}catch(err){
+  console.log(err)
+}
     }
 
   return (
@@ -83,9 +108,9 @@ setIsActiveComponent("productList")
     </div>
       <div className="flex-1 p-6 bg-white">
 {selectedProduct ? (
-  <ProductDetail product={selectedProduct} onBack={() => setSelectedProduct(null)} />
+  <ProductDetail product={selectedProduct} fetchProducts={fetchProducts} onBack={() => setSelectedProduct(null)} />
 ) : isActiveComponent === "productList" ? (
-  <ProductList onProductClick={setSelectedProduct} />
+  <ProductList onProductClick={handleSpecific} products={products}/>
 ) : (
   <AddProduct />
 )}

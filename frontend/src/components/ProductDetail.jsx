@@ -1,26 +1,28 @@
 import React, { useEffect } from "react";
-import  { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 import { deleteProduct } from "../api";
-function ProductDetail({ product, onBack }) {
+
+function ProductDetail({ product, onBack ,fetchProducts}) {
+  const navigate = useNavigate();  
+
   if (!product) return null;
-  const navigate = useNavigate();
-const handleDelete = async (productId) => {
-  console.log("Deleting product with ID:", productId);
-  try {
-    await deleteProduct(productId);
-    alert("Deleted");
-          navigate("/business")
- // ← call it here to go back or refresh list
 
-  } catch (err) {
-    console.error("Failed to delete", err);
-    throw err;
-  }
-};
- 
-  const handleUpdate=()=>{
+  const handleDelete = async (productId) => {
+    console.log("Deleting product with ID:", productId);
+    try {
+      await deleteProduct(productId);
+      await fetchProducts()
+      alert("Deleted");
+      onBack(); 
+    } catch (err) {
+      console.error("Failed to delete", err);
+    }
+  };
 
-  }
+  const handleUpdate = () => {
+    // your update logic
+  };
+
   return (
     <div className="p-6 ">
       <button onClick={onBack} className="text-white mb-4 bg-[#7bb400] hover:bg-[#5c8405] delay-200">
@@ -35,8 +37,7 @@ const handleDelete = async (productId) => {
             className="h-60 w-80 object-cover mb-4 rounded-md"
           />
         </div>
-        <div className="flex flex-col border-gray-200 outline-0 border p-2 rounded-lg w-1/3
-        ">
+        <div className="flex flex-col border-gray-200 outline-0 border p-2 rounded-lg w-1/3">
           <div>
             <h3 className="text-xl font-semibold mb-3 text-gray-700">
               {product.name}
@@ -50,20 +51,17 @@ const handleDelete = async (productId) => {
             <p className="text-[12px] text-gray-500 ">
               Category:
               <span className="text-sm text-gray-500 m-1">
-                {product.category}{" "}
+                {product.category}
               </span>
             </p>
-
             <p className="text-[12px] text-gray-500 m-1 ">
               Price:
               <span className="text-sm text-gray-500 m-1">
-                Rs.{product.price}{" "}
+                Rs.{product.price}
               </span>
             </p>
             <p className="text-sm text-gray-500 m-1">Stock: {product.stock}</p>
           </div>
-          {/* <p className="text-sm text-gray-500 m-1">available: {product.available}</p> */}
-
           <div className="border-gray-200 outline-0 border p-2 rounded-lg">
             <p className="text-sm text-gray-500 text-[12px] m-1">
               Expiry: {product.expiry_date}
@@ -73,10 +71,12 @@ const handleDelete = async (productId) => {
             </p>
           </div>
           <div className="flex justify-between p-4">
-
-        <button className="w-1/3 " onClick={()=>handleDelete(product.id)}>
-Delete            </button>
-            <button className="w-1/3" onClick={handleUpdate}>Update</button>
+            <button className="w-1/3" onClick={() => handleDelete(product.id)}>
+              Delete
+            </button>
+            <button className="w-1/3" onClick={handleUpdate}>
+              Update
+            </button>
           </div>
         </div>
       </div>
