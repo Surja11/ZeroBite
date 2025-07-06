@@ -16,7 +16,7 @@ import CheckoutPage from "./pages/CheckoutPage";
 function AppRouter() {
   const location = useLocation();
 
-  const hideHeaderPaths = ["/", "/login", "/register","/BusinessAcc","/home"];
+  const hideHeaderPaths = ["/", "/login", "/register","/businessacc","/home","/business"];
   const shouldShowHeader = !hideHeaderPaths.includes(location.pathname);
 
   return (
