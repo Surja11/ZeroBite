@@ -11,7 +11,8 @@ from .serializers import *
 def build_documents(products):
   documents = {}
   for product in products:
-    text = f"{product.name} {product.description} {product.category.name} {product.brand}"
+    category_name = product.category.name if product.category else ""
+    text = f"{product.name} {product.description} {category_name} {product.brand}"
     documents[str(product.id)]  = text
   return documents
 
@@ -30,7 +31,8 @@ class ProductRecommendationView(APIView):
     if product_id:
       try:
         product = Product.objects.get(id = product_id)
-        query = f"{product.name} {product.description} {product.category} {product.brand}"
+        category_name = product.category.name if product.category else ""
+        query = f"{product.name} {product.description} {category_name} {product.brand}"
       except Product.DoesNotExist:
         return Response({"error":"Product not found"})
    

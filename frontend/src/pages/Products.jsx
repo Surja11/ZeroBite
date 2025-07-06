@@ -82,37 +82,53 @@ const ProductPage = () => {
 
 
   useEffect(() => {
-    const filtered = products.filter((p) => {
-      const name = p.name?.toLowerCase() || "";
-      const categoryString = (p.category || []).join(" ").toLowerCase();
-      const searchLower = searchTerm.toLowerCase();
+  const filtered = products.filter((p) => {
+    const name = p.name?.toLowerCase() || "";
 
-      const matchesSearch = name.includes(searchLower) || categoryString.includes(searchLower);
-      const matchesCategory =
-        selectedCategory === "All" ||
-        (p.category || []).some((cat) => cat.toLowerCase() === selectedCategory.toLowerCase());
+    // Safe handling of category as array or string
+    const categoryString = Array.isArray(p.category)
+      ? p.category.join(" ").toLowerCase()
+      : typeof p.category === "string"
+      ? p.category.toLowerCase()
+      : "";
 
-      const matchesExpiry = (() => {
-        if (!filters.expiry) return true;
-        const today = new Date();
-        const expiryDate = new Date(p.expiry_date);
-        const diffDays = (expiryDate - today) / (1000 * 60 * 60 * 24);
-        if (filters.expiry === "Today") return diffDays >= 0 && diffDays < 1;
-        if (filters.expiry === "In 3 Days") return diffDays >= 0 && diffDays <= 3;
-        if (filters.expiry === "In a Week") return diffDays >= 0 && diffDays <= 7;
-        if (filters.expiry === "In a Month") return diffDays >= 0 && diffDays <= 30;
-        return true;
-      })();
+    const searchLower = searchTerm.toLowerCase();
 
-      const [minPrice, maxPrice] = filters.priceRange;
-      const matchesPrice = p.price >= minPrice && p.price <= maxPrice;
+    const matchesSearch =
+      name.includes(searchLower) || categoryString.includes(searchLower);
 
-      return matchesSearch && matchesCategory && matchesExpiry && matchesPrice;
-    });
+    const matchesCategory =
+      selectedCategory === "All" ||
+      (Array.isArray(p.category)
+        ? p.category.some(
+            (cat) => cat.toLowerCase() === selectedCategory.toLowerCase()
+          )
+        : typeof p.category === "string"
+        ? p.category.toLowerCase() === selectedCategory.toLowerCase()
+        : false);
 
-    setFilteredProducts(filtered);
-    setCurrentPage(1); // reset to first page on filter/search change
-  }, [searchTerm, selectedCategory, filters, products]);
+    const matchesExpiry = (() => {
+      if (!filters.expiry) return true;
+      const today = new Date();
+      const expiryDate = new Date(p.expiry_date);
+      const diffDays = (expiryDate - today) / (1000 * 60 * 60 * 24);
+      if (filters.expiry === "Today") return diffDays >= 0 && diffDays < 1;
+      if (filters.expiry === "In 3 Days") return diffDays >= 0 && diffDays <= 3;
+      if (filters.expiry === "In a Week") return diffDays >= 0 && diffDays <= 7;
+      if (filters.expiry === "In a Month") return diffDays >= 0 && diffDays <= 30;
+      return true;
+    })();
+
+    const [minPrice, maxPrice] = filters.priceRange;
+    const matchesPrice = p.price >= minPrice && p.price <= maxPrice;
+
+    return matchesSearch && matchesCategory && matchesExpiry && matchesPrice;
+  });
+
+  setFilteredProducts(filtered);
+  setCurrentPage(1); // reset to first page on filter/search change
+}, [searchTerm, selectedCategory, filters, products]);
+
 
   const updateLocation = (newLat, newLon) => {
     const newParams = new URLSearchParams(location.search);
