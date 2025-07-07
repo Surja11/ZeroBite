@@ -12,7 +12,7 @@ function Navbar() {
 	}
 	return (
 		<div>
-			<div className="flex justify-between bg-gray-200 px-4 py-3">
+			<div className="flex justify-between bg-[#f7f4f4] px-4 py-3 shadow-md">
 				<div className="flex items-center space-x-4">
 					<img src={navbar} alt="navbar" className="w-4 cursor-pointer"  onClick={HandleSide}/>
 

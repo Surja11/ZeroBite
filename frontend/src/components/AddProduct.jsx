@@ -9,7 +9,7 @@ function AddProduct() {
   const [brandName, setBrandName] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState([]); // array for multiple
+  const [category, setCategory] = useState(""); // array for multiple
   const [stock, setStock] = useState(1);
   const [manufacturedDate, setManufacturedDate] = useState("");
   const [expiryDate, setExpiryDate] = useState("");

@@ -118,8 +118,49 @@ export const getProduct = async ()=>{
   }
 }
 
-//api for admin oage
+//get speciif product
+export const specificProduct = async (id)=>{
+  const token =localStorage.getItem("access_token")
+  try{
+    const response = await axios.get(`${API_URL}add/productapi/${id}/`,
+      {
+				headers: {
+                  'Content-Type': 'multipart/form-data',  
 
+              ...(token && { Authorization: `Bearer ${token}` }), // include token
+      
+				},
+			}
+    )
+    return response.data;
+  }catch(err){
+	console.error("Failed to get product:", err.response?.data || err.message);
+
+		throw err;
+  }
+}
+
+//api for updating product
+export const updateProduct = async (id, formData) => {
+  const token = localStorage.getItem("access_token");
+  try {
+    const response = await axios.patch(
+      `${API_URL}add/productapi/${id}/`,
+      formData,
+      {
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` }),
+         
+        },
+      }
+    );
+    console.log(response);
+    return response.data;  
+  } catch (err) {
+    console.error("Failed to update product:", err.response?.data || err.message);
+    throw err;
+  }
+};
 
 // Get address from coordinates
 export const fetchAddressFromLatLng = async (lat, lng) => {
