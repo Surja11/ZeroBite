@@ -162,7 +162,13 @@ const navigate =useNavigate()
 
 
 const handleLogout =()=>{
-  localStorage.clear();
+
+  // localStorage.removeItem("access_token")
+  // localStorage.removeItem("refresh_token");
+  // localStorage.removeItem("products")
+  // localStorage.removeItem("user")
+  // sessionStorage.clear();
+  localStorage.clear()
   navigate("/");
   console.log("logut sucessful")
 
