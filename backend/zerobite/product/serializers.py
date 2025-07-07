@@ -7,7 +7,8 @@ class ProductSerializer(serializers.ModelSerializer):
   category =  serializers.SlugRelatedField(
 
      queryset = Category.objects.all(),
-     slug_field = 'name'
+     slug_field = 'name',
+      
   )
   address = serializers.SerializerMethodField()
 
