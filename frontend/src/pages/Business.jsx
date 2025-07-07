@@ -11,9 +11,9 @@ import { useState } from "react";
 import ProductDetail from "../components/ProductDetail";
 import { specificProduct } from "../api";
 import { getProduct } from "../api";
-import { Link
+import { Link} from "react-router-dom";
 
- } from "react-router-dom";
+
 function Business() {
   const [dropmen, setIsDrop] = useState(false);
   const [isActiveComponent,setIsActiveComponent]= useState(null)
@@ -100,9 +100,11 @@ setSelectedProduct(data)
         {dropmen && (
           <div className="flex flex-col items-center space-y-2 border-t-1 border-b-1 border-gray-200  w-full  bg-gray-100">
             
+            <Link to="/productlist">
             <div className="text-m hover:bg-gray-200 w-full p-2" onClick={handleProductClick} >
               product list
             </div>
+            </Link>
             <div className="text-m hover:bg-gray-200 w-full p-2" onClick={HandleAddProducts}>
               add product
             </div>

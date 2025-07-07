@@ -144,15 +144,17 @@ export const specificProduct = async (id)=>{
 export const updateProduct = async (id,formData)=>{
   const token =localStorage.getItem("access_token")
   try{
-    const response = await axios.put(`${API_URL}add/productapi/${id}/`,formData,
+    const response = await axios.patch(`${API_URL}add/productapi/${id}/`,formData,
       {
 				headers: {
+        
               ...(token && { Authorization: `Bearer ${token}` }), 
       
 				},
 			}
     )
-    return response.data;
+    console.log(response)
+    return response;
   }catch(err){
 	console.error("Failed to get product:", err.response?.data || err.message);
 

@@ -12,7 +12,7 @@ import ProductPage from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
-
+import ProductLists from "./pages/ProductLists";
 function AppRouter() {
   const location = useLocation();
 
@@ -34,7 +34,7 @@ function AppRouter() {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
-  
+    <Route path="/productlist" element={<ProductLists/>}/>
 
       </Routes>
     </>
