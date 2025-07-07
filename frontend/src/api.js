@@ -141,26 +141,26 @@ export const specificProduct = async (id)=>{
 }
 
 //api for updating product
-export const updateProduct = async (id,formData)=>{
-  const token =localStorage.getItem("access_token")
-  try{
-    const response = await axios.patch(`${API_URL}add/productapi/${id}/`,formData,
+export const updateProduct = async (id, formData) => {
+  const token = localStorage.getItem("access_token");
+  try {
+    const response = await axios.patch(
+      `${API_URL}add/productapi/${id}/`,
+      formData,
       {
-				headers: {
-        
-              ...(token && { Authorization: `Bearer ${token}` }), 
-      
-				},
-			}
-    )
-    console.log(response)
-    return response;
-  }catch(err){
-	console.error("Failed to get product:", err.response?.data || err.message);
-
-		throw err;
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` }),
+         
+        },
+      }
+    );
+    console.log(response);
+    return response.data;  
+  } catch (err) {
+    console.error("Failed to update product:", err.response?.data || err.message);
+    throw err;
   }
-}
+};
 
 // Get address from coordinates
 export const fetchAddressFromLatLng = async (lat, lng) => {

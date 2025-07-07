@@ -6,7 +6,6 @@ function ProductDetail({ product, onBack, fetchProducts }) {
   const [updatedName, setUpdatedName] = useState(product.name);
   const [updatedPrice, setUpdatedPrice] = useState(product.price);
   const [Description, setDescription] = useState(product.description);
-  // const [selectedFile, setSelectedFile] = useState(null);
   const [stock,setStock] = useState(product.stock)
   const [Manufacture,setManufacture] = useState(product.manufactured_date)
   const [Expire,setExpire] = useState(product.expiry_date)
@@ -25,29 +24,28 @@ function ProductDetail({ product, onBack, fetchProducts }) {
   };
 
   const handleUpdateSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const formData = new FormData();
-      formData.append("name", updatedName);
-      formData.append("price", updatedPrice);
-      formData.append("stock",stock);
-    formData.append("manufactured_date", Manufacture);
-    formData.append("expiry_date",Expire)
-    formData.append("category",category)
-    formData.append("description", Description) ;
-      // formData.append("description", updatedDescription);
-      // if (selectedFile) {
-      //   formData.append("image", selectedFile);
-      // }
+  e.preventDefault();
+  try {
+    const formData = {
+      name: updatedName,
+      price: updatedPrice,
+      stock: stock,
+      manufactured_date: Manufacture,
+      expiry_date: Expire,
+      category: category,
+      description: Description,
+    };
 
-      await updateProduct(product.id, formData);
-      alert("Product updated!");
-      await fetchProducts();
-      setShowUpdateForm(false);
-    } catch (err) {
-      console.error("Failed to update product", err);
-    }
-  };
+    await updateProduct(product.id, formData);
+    alert("Product updated!");
+    onBack()
+    await fetchProducts();
+    setShowUpdateForm(false);
+  } catch (err) {
+    console.error("Failed to update product", err);
+  }
+};
+
 
   useEffect(() => {
   setUpdatedName(product.name);
