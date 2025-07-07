@@ -50,6 +50,7 @@ setIsActiveComponent("productList")
     const handleSpecific = async (id)=>{
 try{
   const data = await specificProduct(id)
+  alert("specific data fetched")
 console.log(data)
 setSelectedProduct(data)
 }catch(err){

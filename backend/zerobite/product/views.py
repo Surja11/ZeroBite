@@ -240,6 +240,16 @@ class ProductViewSet(viewsets.ViewSet):
     except:
       return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
     
+  def partial_update(self, request, pk):
+     product = get_object_or_404(Product, pk = pk)
+     try:
+      serializer = ProductSerializer(product, data = request.data , context = {'request': request}, partial = True)
+      if serializer.is_valid():
+        serializer.save()
+        return Response({"message":"Product Updated"}, status= status.HTTP_200_OK)
+     except:
+        return Response({"message": "Update failed"}, status= status.HTTP_400_BAD_REQUEST)
+    
   def destroy(self, request, pk):
   
     product = get_object_or_404(Product, pk = pk)
