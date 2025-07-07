@@ -137,12 +137,12 @@ def showProduct(request, pk):
 class ProductView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        user_lat = float(request.query_params.get('lat', 0))
-        user_lon = float(request.query_params.get('lon', 0))
+        user_lat = round(float(request.query_params.get('lat', 0)),3)
+        user_lon = round(float(request.query_params.get('lon', 0)),3)
 
         print(user_lat, user_lon)
 
-        cache_key = f"products_{round(user_lat, 3)}_{round(user_lon, 3)}"
+        cache_key = f"products_{user_lat}_{user_lon}"
         cached_data = cache.get(cache_key)
         if cached_data:
             print("Cache hit")
@@ -150,10 +150,8 @@ class ProductView(APIView):
 
         print("Cache miss — computing and caching")
         today= timezone.now().date()
-        Product.objects.filter(
-        Q(expiry_date__lte=today) & ~Q(category__name__in=['Fast Food','Indian Cuisine','Chinese Cuisine','Continental','Nepali Khana']) |
-        Q(expiry_date__lt=today, category__name__in=['Fast Food','Indian Cuisine','Chinese Cuisine','Continental','Nepali Khana'])
-        ).delete()
+        Product.objects.filter(Q(expiry_date__lt=today) |Q(expiry_date=today) & ~Q(category__name__in= ['Fast Food', 'Indian Cuisine', 'Chinese Cuisine', 'Continental', 'Nepali Khana'])
+).delete()
 
         print("product deleted")
 
