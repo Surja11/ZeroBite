@@ -33,13 +33,11 @@ class ProductSerializer(serializers.ModelSerializer):
       return obj.price * 0.9
     return obj.price
 
-  
-
 
   def create(self, validated_data):
     validated_data.pop('discounted_price', None)
     validated_data.pop('address',None)
-    category = validated_data.pop('category', [])
+    # category = validated_data.pop('category')
     user = self.context['request'].user
     business = self._get_business_instance(user)
     if not business:
