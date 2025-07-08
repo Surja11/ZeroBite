@@ -146,7 +146,7 @@
 
 import React, { useState, useEffect } from "react";
 import { getProduct, specificProduct } from "../api";
-import { Link, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 import { ProductsContext } from "../context/ProductsContext";
 import zero from "/images/zero.png";
 import product from "/images/product.png";
@@ -159,12 +159,37 @@ function Business() {
   const [dropmen, setIsDrop] = useState(false);
   const [products, setProducts] = useState([]);
 const navigate =useNavigate()
+
+
+const handleLogout =()=>{
+
+  // localStorage.removeItem("access_token")
+  // localStorage.removeItem("refresh_token");
+  // localStorage.removeItem("products")
+  // localStorage.removeItem("user")
+  // sessionStorage.clear();
+  localStorage.clear()
+  navigate("/");
+  console.log("logut sucessful")
+
+}
+
   const fetchProducts = async () => {
-    try {
-      const data = await getProduct();
-      setProducts(data);
-    } catch (err) {
-      console.error("Failed to fetch products", err);
+    const cachedProducts = localStorage.getItem("products")
+    if(cachedProducts){
+      setProducts(JSON.parse(cachedProducts))
+          // console.log("Loaded products from cache");
+
+    }else{
+
+      try {
+        const data = await getProduct();
+        setProducts(data);
+              localStorage.setItem("products", JSON.stringify(data));
+// console.log("cached set")
+      } catch (err) {
+        console.error("Failed to fetch products", err);
+      }
     }
   };
 
@@ -200,7 +225,7 @@ const navigate =useNavigate()
           <div className="bg-[#f8f8fa] py-1 flex flex-col items-start space-y-3">
             <div className="flex items-center justify-between w-full px-5 py-1 hover:bg-gray-300 cursor-pointer">
               <div className="flex items-center space-x-3">
-                <img src={product} alt="pro" className="w-5" />
+                <img src={product} alt="pro" className="w-5  " />
                 <span>Products</span>
               </div>
               <div>
@@ -213,17 +238,22 @@ const navigate =useNavigate()
             </div>
             {dropmen && (
               <div className="flex flex-col items-center space-y-2 border-t border-b border-gray-200 w-full bg-gray-100">
-                <Link to="productlist">
-                  <div className="text-m hover:bg-gray-200 p-2">Product List</div>
-                </Link>
-                <Link to="add">
-                  <div className="text-m hover:bg-gray-200 w-full p-2">Add Product</div>
-                </Link>
+                <NavLink to="productlist">
+                  <div className="text-md p-2 hover:text-[#7bb400] hover:font-semibold hover:bg-gray-200  ">Product List</div>
+                </NavLink>
+               
+                <NavLink to="add">
+                  <div className="text-md w-full hover:text-[#7bb400] hover:font-semibold hover:bg-gray-200  p-2">Add Product</div>
+                </NavLink>
               </div>
             )}
             <div className="flex items-center space-x-3 w-full px-5 py-2 hover:bg-gray-300 cursor-pointer">
               <img src={order} alt="pro" className="w-5" />
               <span>Order</span>
+            </div>
+            <div className="flex items-center justify-center space-x-3 w-full px-5 py-2  cursor-pointer">
+
+              <button className="w-full bg-[#00a63e] text-white border-0 hover:bg-[#7aa500]" onClick={handleLogout}>Logout</button>
             </div>
           </div>
         </div>

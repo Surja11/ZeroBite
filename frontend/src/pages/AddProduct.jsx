@@ -209,11 +209,8 @@ function AddProduct() {
                  <p></p>
                  <select
                    onChange={(e) => {
-                     const selected = Array.from(
-                       e.target.selectedOptions,
-                       (option) => option.value
-                     );
-                     setCategory(selected);
+                     
+                     setCategory(e.target.value);
                    }}
                    value={category}
                    className="border text-gray-500 border-gray-100 rounded w-1/2 p-2 mt-3 shadow outline-0"
