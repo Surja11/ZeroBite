@@ -2,143 +2,133 @@ import axios from "axios";
 
 const API_URL = "http://127.0.0.1:8000/";
 
+//userRegister
 export const register = async (postData) => {
-	try {
-		const response = await axios.post(
-			`${API_URL}customer/customerregister/`,
-			postData,
-			{
-				headers: {
-					"Content-Type": "application/json",
-				},
-			}
-		);
-		return response.data;
-	} catch (error) {
-		console.log("Failed to login:", error.response?.data || error.message);
+  try {
+    const response = await axios.post(
+      `${API_URL}customer/customerregister/`,
+      postData,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.log("Failed to login:", error.response?.data || error.message);
 
-		throw error;
-	}
+    throw error;
+  }
 };
 
+//user login
 export const login = async (postData) => {
   try {
     const response = await axios.post(`${API_URL}login/`, postData, {
-   
-      withCredentials: true // Important for CORS with credentials
+      withCredentials: true, // Important for CORS with credentials
     });
-    
+
     console.log("Complete response object:", response);
     console.log("Response data structure:", {
       keys: Object.keys(response.data),
-      data: response.data
+      data: response.data,
     });
-    
+
     // More flexible token extraction
-    const token = response.data.access_token || response.data.access || response.data.token;
+    const token =
+      response.data.access_token || response.data.access || response.data.token;
     const refresh = response.data.refresh_token || response.data.refresh;
     const user = response.data.user || {
       email: response.data.email,
-      id: response.data.user_id || response.data.id
+      id: response.data.user_id || response.data.id,
     };
-    console.log("User type:", user.user_type); // e.g., "customer" or "business"
-    
+    // console.log("User type:", user.user_type); // e.g., "customer" or "business"
+    // console.log(response);
+
     if (!token) {
       throw new Error("No access token found in response");
     }
-    
     localStorage.setItem("access_token", token);
     if (refresh) localStorage.setItem("refresh_token", refresh);
     localStorage.setItem("user", JSON.stringify(user));
-    
     return user;
+    
   } catch (error) {
     console.error("Detailed login error:", {
       message: error.message,
       response: error.response?.data,
       status: error.response?.status,
-      headers: error.response?.headers
+      headers: error.response?.headers,
     });
     throw error;
   }
 };
 
 export const BusinessReg = async (postData) => {
-	try {
-		const response = await axios.post(
-			`${API_URL}business/register/`,postData,
-			
-		);
-		return response.data;
-	} catch (error) {
-		console.log("Failed to login:", error.response?.data || error.message);
+  try {
+    const response = await axios.post(`${API_URL}business/register/`, postData);
+    return response.data;
+  } catch (error) {
+    console.log("Failed to login:", error.response?.data || error.message);
 
-		throw error;
-	}
+    throw error;
+  }
 };
 
 // api to post products from business page
-export const postProduct = async (formData)=>{
-  const token =localStorage.getItem("access_token")
-  try{
-    const response = await axios.post(`${API_URL}add/productapi/`,formData,
-      {
-				headers: {
-              ...(token && { Authorization: `Bearer ${token}` }), // include token
-      
-				},
-			}
-    )
+export const postProduct = async (formData) => {
+  const token = localStorage.getItem("access_token");
+  try {
+    const response = await axios.post(`${API_URL}add/productapi/`, formData, {
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }), // include token
+      },
+    });
     return response.data;
-  }catch(err){
-	console.error("Failed to post product:", err.response?.data || err.message);
+  } catch (err) {
+    console.error("Failed to post product:", err.response?.data || err.message);
 
-		throw err;
+    throw err;
   }
-}
+};
 
 //apito get products
 
-export const getProduct = async ()=>{
-  const token =localStorage.getItem("access_token")
-  try{
-    const response = await axios.get(`${API_URL}add/productapi/`,
-      {
-				headers: {
-              ...(token && { Authorization: `Bearer ${token}` }), // include token
-      
-				},
-			}
-    )
+export const getProduct = async () => {
+  const token = localStorage.getItem("access_token");
+  try {
+    const response = await axios.get(`${API_URL}add/productapi/`, {
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }), // include token
+      },
+    });
     return response.data;
-  }catch(err){
-	console.error("Failed to get product:", err.response?.data || err.message);
+  } catch (err) {
+    console.error("Failed to get product:", err.response?.data || err.message);
 
-		throw err;
+    throw err;
   }
-}
+};
 
 //get speciif product
-export const specificProduct = async (id)=>{
-  const token =localStorage.getItem("access_token")
-  try{
-    const response = await axios.get(`${API_URL}add/productapi/${id}/`,
-      {
-				headers: {
-                  'Content-Type': 'multipart/form-data',  
+export const specificProduct = async (id) => {
+  const token = localStorage.getItem("access_token");
+  try {
+    const response = await axios.get(`${API_URL}add/productapi/${id}/`, {
+      headers: {
+        "Content-Type": "multipart/form-data",
 
-              ...(token && { Authorization: `Bearer ${token}` }), // include token
-      
-				},
-			}
-    )
+        ...(token && { Authorization: `Bearer ${token}` }), // include token
+      },
+    });
     return response.data;
-  }catch(err){
-	console.error("Failed to get product:", err.response?.data || err.message);
+  } catch (err) {
+    console.error("Failed to get product:", err.response?.data || err.message);
 
-		throw err;
+    throw err;
   }
-}
+};
 
 //api for updating product
 export const updateProduct = async (id, formData) => {
@@ -150,14 +140,16 @@ export const updateProduct = async (id, formData) => {
       {
         headers: {
           ...(token && { Authorization: `Bearer ${token}` }),
-         
         },
       }
     );
     console.log(response);
-    return response.data;  
+    return response.data;
   } catch (err) {
-    console.error("Failed to update product:", err.response?.data || err.message);
+    console.error(
+      "Failed to update product:",
+      err.response?.data || err.message
+    );
     throw err;
   }
 };
@@ -176,10 +168,6 @@ export const fetchAddressFromLatLng = async (lat, lng) => {
   }
 };
 
-
-
-
-
 //location search
 
 export const Location = async (lat, lon) => {
@@ -191,34 +179,32 @@ export const Location = async (lat, lon) => {
         ...(token && { Authorization: `Bearer ${token}` }), // Include token if available
       },
     });
-    console.log('Sorted Products:', res.data);
+    console.log("Sorted Products:", res.data);
     return res.data;
   } catch (error) {
     console.error("Failed to load", error);
-    console.error('Error fetching products:', error.response?.data || error.message);
+    console.error(
+      "Error fetching products:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 };
 
-
-
 // http://127.0.0.1:8000/customer/customerregister/
-//delete element 
-export const deleteProduct = async (id)=>{
-  const token =localStorage.getItem("access_token")
-  try{
-    const response = await axios.delete(`${API_URL}add/productapi/${id}/`,
-      {
-				headers: {
-              ...(token && { Authorization: `Bearer ${token}` }), // include token
-      
-				},
-			}
-    )
+//delete element
+export const deleteProduct = async (id) => {
+  const token = localStorage.getItem("access_token");
+  try {
+    const response = await axios.delete(`${API_URL}add/productapi/${id}/`, {
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }), // include token
+      },
+    });
     return response.data;
-  }catch(err){
-	console.error("Failed to post product:", err.response?.data || err.message);
+  } catch (err) {
+    console.error("Failed to post product:", err.response?.data || err.message);
 
-		throw err;
+    throw err;
   }
-}
+};

@@ -22,8 +22,8 @@ function Login() {
     }
     try {
       const user = await login(postData);
-
-      console.log('LOGIN SUCESS')
+console.log(user)
+      // console.log('LOGIN SUCESS')
 
       if (user.user_type === "business") {
 
