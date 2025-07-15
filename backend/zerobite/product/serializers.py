@@ -10,11 +10,12 @@ class ProductSerializer(serializers.ModelSerializer):
      slug_field = 'name',
       
   )
+  business_type = serializers.CharField(source='business.business_type', read_only=True)
   address = serializers.SerializerMethodField()
 
   class Meta:
     model = Product
-    fields = ['id','business','category',
+    fields = ['id','business','business_type','category','brand',
   'name','description','price','image',
   'manufactured_date','expiry_date','stock',
   'available','discounted_price','address']
@@ -33,13 +34,11 @@ class ProductSerializer(serializers.ModelSerializer):
       return obj.price * 0.9
     return obj.price
 
-  
-
 
   def create(self, validated_data):
     validated_data.pop('discounted_price', None)
     validated_data.pop('address',None)
-    category = validated_data.pop('category', [])
+    # category = validated_data.pop('category')
     user = self.context['request'].user
     business = self._get_business_instance(user)
     if not business:

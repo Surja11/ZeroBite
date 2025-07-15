@@ -98,40 +98,6 @@ def showProduct(request, pk):
 #     serializer = ProductSerializer(sorted_products, many = True)
 #     return Response(serializer.data)
 
-# class ProductView(APIView):
-#     def get(self, request):
-       
-#         products = Product.objects.select_related('business').only(
-#             'id', 'expiry_date', 'business__store_latitude', 'business__store_longitude'
-#         ).all()
-        
-#         user_lat = float(request.query_params.get('lat', 0))
-#         user_lon = float(request.query_params.get('lon', 0))
-        
-
-#         distances = batch_haversine(user_lat, user_lon, products)
-#         expiry_days = [(p.expiry_date - date.today()).days for p in products]
-        
-#         max_distance = max(distances) if distances else 1
-#         max_days = max(expiry_days) if expiry_days else 1
-        
-
-#         heap = PriorityQueue()
-#         for product, distance, days in zip(products, distances, expiry_days):
-#             priority = calc_priority(distance, days, max_distance, max_days)
-#             heap.push(priority, product)
-        
-
-#         sorted_products = []
-#         while heap.size() > 0 and len(sorted_products) < 100:
-#             product = heap.pop()
-#             if product:
-#                 sorted_products.append(product)
-        
-#         serializer = ProductSerializer(sorted_products, many=True)
-#         return Response(serializer.data)
-
-
 
 
 class ProductView(APIView):
@@ -150,11 +116,9 @@ class ProductView(APIView):
 
         print("Cache miss — computing and caching")
         today= timezone.now().date()
-        Product.objects.filter(Q(expiry_date__lt=today) |Q(expiry_date=today) & ~Q(category__name__in= ['Fast Food', 'Indian Cuisine', 'Chinese Cuisine', 'Continental', 'Nepali Khana'])
-).delete()
+        Product.objects.filter(Q(expiry_date__lt=today) |Q(expiry_date=today) & ~Q(category__name__in= ['Fast Food', 'Indian Cuisine', 'Chinese Cuisine', 'Continental', 'Nepali Khana'])).delete()
 
         print("product deleted")
-
 
         products = Product.objects.select_related('business','category').only(
             'id', 'expiry_date', 'business__store_latitude', 'business__store_longitude',
@@ -190,6 +154,7 @@ class ProductView(APIView):
         serializer = ProductSerializer(sorted_products, many=True)
 
         cache.set(cache_key, serializer.data, timeout=86400)
+        print(serializer.data)
 
         return Response(serializer.data)
 
@@ -217,6 +182,7 @@ class ProductViewSet(viewsets.ViewSet):
   def list(self, request):
       all_products = Product.objects.filter(business = request.user.business) 
       serializer = ProductSerializer(all_products, many = True)
+
       return Response(serializer.data)
    
   
@@ -225,6 +191,7 @@ class ProductViewSet(viewsets.ViewSet):
     if id is not None:
       product = get_object_or_404(Product,pk = pk)
       serializer = ProductSerializer(product)
+      
       return Response(serializer.data)
     
   def update(self, request, pk):

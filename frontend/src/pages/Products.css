@@ -25,8 +25,10 @@
 .category-buttons {
   display: flex;
   flex-wrap: wrap;
+  justify-content: space-around; 
   gap: 10px;
 }
+
 
 .category-button {
   padding: 6px 14px;

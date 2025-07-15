@@ -47,8 +47,8 @@ class TFIDF:
     idf = {}
     total_documents = len(self.processed_documents)
     for term in self.vocab:
-      token_in_doc_count= sum(1 for tokens in self.processed_documents.values() if term in tokens)
-      idf[term] = math.log((total_documents+1)/(token_in_doc_count+1))+1
+      term_in_doc_count= sum(1 for document in self.processed_documents.values() if term in document)
+      idf[term] = math.log((total_documents+1)/(term_in_doc_count+1))+1
     return idf
     
   def compute_tfidf(self):
@@ -56,11 +56,12 @@ class TFIDF:
     self.idf = self.compute_idf()
     
     for doc_id in self.doc_ids:
-        tf = self.compute_tf(self.processed_documents[doc_id])
+        tf = self.compute_tf(self.processed_documents[doc_id])  #returns a defaultdict
         tfidf_vector = [tf.get(term, 0) * self.idf.get(term, 0) for term in self.vocab]
         self.tfidf_matrix.append((doc_id, tfidf_vector))
     
     return self.tfidf_matrix
+
 
   def cosine_similarity(self, vec1, vec2):
     dot_product = sum(a * b for a, b in zip(vec1, vec2))
@@ -71,12 +72,12 @@ class TFIDF:
     return dot_product / (norm1 * norm2)
   
   def query_vector(self, query):
-    tokens = self.preprocess(query)
+    tokens = self.preprocess(query) #returns a list
     query_tf = self.compute_tf(tokens)
     tfidf = [query_tf.get(term, 0) * self.idf.get(term,0) for term in self.vocab]
     return tfidf
   
-  def rank_documents(self, query, top_k  =7):
+  def rank_documents(self, query, top_k):
     query_vector = self.query_vector(query)
     pq = PriorityQueue()
 
@@ -92,9 +93,11 @@ class TFIDF:
 
 if __name__ == "__main__":
   documents = {
-    "doc1": "The quick brown fox jumps over the lazy dog",
-    "doc2": "Never jump over the lazy dog quickly",
-    "doc3": "Fast foxes and quick dogs"
+    "doc1": "The best pizza place in Kathmandu",
+    "doc2": "The best burger place in Kathmandu",
+    "doc3": "Delicious pizza",
+    "doc4":"The best food in Kathmandu",
+    "doc5":"The best pizza all over Nepal"
   }
 
   tfidf = TFIDF(documents)
@@ -103,5 +106,5 @@ if __name__ == "__main__":
 
   similarity = tfidf.cosine_similarity(matrix[0][1], matrix[1][1])
   print(f"Similarity between doc1 and doc2: {similarity:.2f}")
-  tfidf.rank_documents("quick fox", top_k=2)
+  tfidf.rank_documents("Best pizza", top_k=2)
    
