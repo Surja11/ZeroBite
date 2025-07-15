@@ -154,6 +154,7 @@ class ProductView(APIView):
         serializer = ProductSerializer(sorted_products, many=True)
 
         cache.set(cache_key, serializer.data, timeout=86400)
+        print(serializer.data)
 
         return Response(serializer.data)
 

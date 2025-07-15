@@ -10,11 +10,12 @@ class ProductSerializer(serializers.ModelSerializer):
      slug_field = 'name',
       
   )
+  business_type = serializers.CharField(source='business.business_type', read_only=True)
   address = serializers.SerializerMethodField()
 
   class Meta:
     model = Product
-    fields = ['id','business','category',
+    fields = ['id','business','business_type','category','brand',
   'name','description','price','image',
   'manufactured_date','expiry_date','stock',
   'available','discounted_price','address']

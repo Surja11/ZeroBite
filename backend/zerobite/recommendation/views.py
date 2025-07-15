@@ -22,7 +22,7 @@ class ProductRecommendationView(APIView):
     documents = build_documents(products)
 
     tfidf = TFIDF(documents)
-    tfidf.compute_tfidf()
+    tfidf.compute_tfidf() 
 
 
     query = request.query_params.get("query")
