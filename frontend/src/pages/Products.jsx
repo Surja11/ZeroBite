@@ -1,13 +1,16 @@
-
-
-
+// src/pages/ProductPage.jsx
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Card from "../components/ProductCard";
 import FilterBar from "../components/FilterBar";
 import "./Products.css";
 
-const categories = ["All"];
+const categories = [
+  { label: "All", value: "All" },
+  { label: "Bakery", value: "bakery" },
+  { label: "Convenience Store", value: "convenience_store" },
+  { label: "Restaurant", value: "restaurant" }
+];
 
 const ProductPage = () => {
   const navigate = useNavigate();
@@ -22,7 +25,11 @@ const ProductPage = () => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [filters, setFilters] = useState({ expiry: "", priceRange: [0, 1000], radius: 5 });
+  const [filters, setFilters] = useState({
+    expiry: "",
+    priceRange: [0, 1000],
+    radius: 5
+  });
 
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 16;
@@ -37,8 +44,7 @@ const ProductPage = () => {
           params.set("lon", userLon);
           navigate(`/products?${params.toString()}`, { replace: true });
         },
-        (error) => {
-          console.warn("Geolocation failed, defaulting to Kathmandu:", error);
+        () => {
           params.set("lat", 27.5291);
           params.set("lon", 84.3542);
           navigate(`/products?${params.toString()}`, { replace: true });
@@ -51,41 +57,31 @@ const ProductPage = () => {
     setSearchTerm(params.get("search") || "");
   }, [location.search]);
 
- useEffect(() => {
-  const token = localStorage.getItem("access_token");
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
 
-  if (lat && lon && token) {
-    const url = `http://127.0.0.1:8000/product/getProducts/?lat=${lat}&lon=${lon}`;
-
-    fetch(url, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`HTTP error ${res.status}`);
+    if (lat && lon && token) {
+      fetch(`http://127.0.0.1:8000/product/getProducts/?lat=${lat}&lon=${lon}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
         }
-        return res.json();
       })
-      .then((data) => {
-        setProducts(data);
-        setFilteredProducts(data);
-      })
-      .catch((err) => {
-        console.error("Error fetching products:", err);
-      });
-  }
-}, [lat, lon]);
-
+        .then((res) => res.ok ? res.json() : Promise.reject(res.status))
+        .then((data) => {
+          setProducts(data);
+          setFilteredProducts(data);
+        })
+        .catch((err) => {
+          console.error("Error fetching products:", err);
+        });
+    }
+  }, [lat, lon]);
 
   useEffect(() => {
   const filtered = products.filter((p) => {
     const name = p.name?.toLowerCase() || "";
-
-    // Safe handling of category as array or string
     const categoryString = Array.isArray(p.category)
       ? p.category.join(" ").toLowerCase()
       : typeof p.category === "string"
@@ -93,25 +89,27 @@ const ProductPage = () => {
       : "";
 
     const searchLower = searchTerm.toLowerCase();
-
     const matchesSearch =
       name.includes(searchLower) || categoryString.includes(searchLower);
 
-    const matchesCategory =
+    const matchesBusinessType =
       selectedCategory === "All" ||
-      (Array.isArray(p.category)
-        ? p.category.some(
-            (cat) => cat.toLowerCase() === selectedCategory.toLowerCase()
-          )
-        : typeof p.category === "string"
-        ? p.category.toLowerCase() === selectedCategory.toLowerCase()
-        : false);
+      (p.business_type &&
+        p.business_type.toLowerCase() === selectedCategory.toLowerCase());
 
+    const [minPrice, maxPrice] = filters.priceRange;
+    const matchesPrice = p.price >= minPrice && p.price <= maxPrice;
+
+    // Expiry filtering
+    const now = new Date();
+    const expiryDate = new Date(p.expiry_date);
+    const diffMs = expiryDate - now;
+    const diffHours = diffMs / (1000 * 60 * 60);
+    const diffDays = diffMs / (1000 * 60 * 60 * 24);
+
+    // General expiry filter from filter bar
     const matchesExpiry = (() => {
       if (!filters.expiry) return true;
-      const today = new Date();
-      const expiryDate = new Date(p.expiry_date);
-      const diffDays = (expiryDate - today) / (1000 * 60 * 60 * 24);
       if (filters.expiry === "Today") return diffDays >= 0 && diffDays < 1;
       if (filters.expiry === "In 3 Days") return diffDays >= 0 && diffDays <= 3;
       if (filters.expiry === "In a Week") return diffDays >= 0 && diffDays <= 7;
@@ -119,14 +117,22 @@ const ProductPage = () => {
       return true;
     })();
 
-    const [minPrice, maxPrice] = filters.priceRange;
-    const matchesPrice = p.price >= minPrice && p.price <= maxPrice;
+    // Final filter logic based on business type & expiry
+    const isRestaurant = p.business_type?.toLowerCase() === "restaurant";
 
-    return matchesSearch && matchesCategory && matchesExpiry && matchesPrice;
+    if (!isRestaurant && diffHours <= 24) return false; // Hide non-restaurants expiring in <= 24h
+    if (isRestaurant && diffHours <= 1) return false;   // Hide restaurants expiring in <= 1h
+
+    return (
+      matchesSearch &&
+      matchesBusinessType &&
+      matchesExpiry &&
+      matchesPrice
+    );
   });
 
   setFilteredProducts(filtered);
-  setCurrentPage(1); // reset to first page on filter/search change
+  setCurrentPage(1);
 }, [searchTerm, selectedCategory, filters, products]);
 
 
@@ -147,22 +153,20 @@ const ProductPage = () => {
   return (
     <div>
       <div className="options">
-        <div className="category-buttons">
-          {categories.map((category) => (
+        <div className="category-buttons" style={{ justifyContent: "space-around" }}>
+          {categories.map((cat) => (
             <button
-              key={category}
-              className={`category-button ${selectedCategory === category ? "selected" : ""}`}
-              onClick={() => setSelectedCategory(category)}
+              key={cat.value}
+              className={`category-button ${selectedCategory === cat.value ? "selected" : ""}`}
+              onClick={() => setSelectedCategory(cat.value)}
             >
-              {category}
+              {cat.label}
             </button>
           ))}
         </div>
         <div className="product-count">
           Showing {paginatedProducts.length} / {filteredProducts.length} products
         </div>
-
-
       </div>
 
       <div className="main-content">
@@ -197,19 +201,11 @@ const ProductPage = () => {
 
       {totalPages > 1 && (
         <div className="pagination">
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-            disabled={currentPage === 1}
-          >
+          <button onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))} disabled={currentPage === 1}>
             ← Prev
           </button>
-          <span>
-            Page {currentPage} of {totalPages}
-          </span>
-          <button
-            onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
-            disabled={currentPage === totalPages}
-          >
+          <span>Page {currentPage} of {totalPages}</span>
+          <button onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))} disabled={currentPage === totalPages}>
             Next →
           </button>
         </div>
@@ -219,6 +215,3 @@ const ProductPage = () => {
 };
 
 export default ProductPage;
-
-
-
