@@ -93,9 +93,11 @@ class TFIDF:
 
 if __name__ == "__main__":
   documents = {
-    "doc1": "The quick brown fox jumps over the lazy dog",
-    "doc2": "Never jump over the lazy dog quickly",
-    "doc3": "Fast foxes and quick dogs"
+    "doc1": "The best pizza place in Kathmandu",
+    "doc2": "The best burger place in Kathmandu",
+    "doc3": "Delicious pizza",
+    "doc4":"The best food in Kathmandu",
+    "doc5":"The best pizza all over Nepal"
   }
 
   tfidf = TFIDF(documents)
@@ -104,5 +106,5 @@ if __name__ == "__main__":
 
   similarity = tfidf.cosine_similarity(matrix[0][1], matrix[1][1])
   print(f"Similarity between doc1 and doc2: {similarity:.2f}")
-  tfidf.rank_documents("quick fox", top_k=2)
+  tfidf.rank_documents("Best pizza", top_k=2)
    
