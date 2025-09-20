@@ -20,12 +20,12 @@ class ProductRecommendationView(APIView):
   def get(self, request):
     products = Product.objects.all()
     documents = build_documents(products)
-
+    
     tfidf = TFIDF(documents)
     tfidf.compute_tfidf() 
 
 
-    query = request.query_params.get("query")
+    # query = request.query_params.get("query")
     product_id = request.query_params.get("product_id")
 
     if product_id:

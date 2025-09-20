@@ -23,10 +23,12 @@ const CartPage = () => {
           <>
             {cartItems.map(item => (
               <div className="cart-item" key={item.id}>
-                <img src={item.image_url} alt={item.name} />
+                <img src={`http://127.0.0.1:8000/${item.image}`} alt={item.name} />
                 <div className="cart-item-details">
                   <h3>{item.name}</h3>
                   <p>Price: Rs. {item.price}</p>
+
+                  <p>Discounted Price: Rs. {item.discounted_price}</p>
 
                   {/* Quantity */}
                   <label>
@@ -47,7 +49,7 @@ const CartPage = () => {
                   </label>
 
                   {/* Per-item total */}
-                  <p className="item-total">Total: Rs. {item.price * item.quantity}</p>
+                  <p className="item-total">Total: Rs. {item.discounted_price * item.quantity}</p>
 
                   <button className="remove-btn" onClick={() => removeFromCart(item.id)}>
                     Remove
