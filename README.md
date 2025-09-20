@@ -29,7 +29,6 @@
 
 ## 🖼️ Snapshots of the Project
 
-📌 *(Add screenshots once available)*  
 
 - **Landing Page** 
 ![Landing Page](./images/1.png)  
@@ -112,3 +111,4 @@
       
 
       npm run dev
+
