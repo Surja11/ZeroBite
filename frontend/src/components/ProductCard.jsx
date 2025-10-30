@@ -64,9 +64,7 @@ const Card = ({ product }) => {
                 <p style={{ fontSize: '12px' }}>{expiryText}</p>
               </button>
             </div>
-            <div className="card-footer">
-              <div className="rating">⭐(4.2)</div>
-            </div>
+           
           </div>
         </div>
       </Link>
