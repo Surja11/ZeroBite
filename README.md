@@ -1,6 +1,6 @@
 # 🌟 ZeroBite – A Sustainable Food Recommendation & Expiry Management Platform
 
-  ##### ZeroBite is a sustainable food recommendation and expiry management platform that helps reduce food waste. Businesses can list surplus or near-expiry food products, while users can discover these products at discounted prices and receive personalized food recommendations.
+#### ZeroBite is a sustainable food recommendation and expiry management platform that helps reduce food waste. Businesses can list surplus or near-expiry food products, while users can discover these products at discounted prices and receive personalized food recommendations.
 ---
 
 ## ✨ Key Features
@@ -29,7 +29,6 @@
 
 ## 🖼️ Snapshots of the Project
 
-📌 *(Add screenshots once available)*  
 
 - **Landing Page** 
 ![Landing Page](./images/1.png)  
@@ -110,4 +109,6 @@
 
       npm install
       
+
       npm run dev
+
