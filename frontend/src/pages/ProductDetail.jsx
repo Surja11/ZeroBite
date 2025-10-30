@@ -81,6 +81,7 @@ const ProductDetail = () => {
             <p><strong>Location:</strong> {product.address || "N/A"}</p>
             <p><strong>Expires:</strong> {new Date(product.expiry_date).toDateString()}</p>
             <p><strong>Price:</strong> Rs. {product.price}</p>
+            <p><strong>Discounted Price:</strong> Rs. {product.discounted_price}</p>
             <p><strong>Description:</strong><br />{product.description}</p>
             <div className="actions">
               <button onClick={handleAddToCart}>Add to Cart</button>

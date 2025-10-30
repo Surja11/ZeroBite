@@ -26,7 +26,7 @@ class TFIDF:
   
   def build_vocab(self):
     for doc_id, text in self.documents.items():
-      tokens = self.preprocess(text)
+      tokens = self.preprocess(text) #returns an array of stemmed words
       self.processed_documents[doc_id] = tokens
       self.vocab.update(tokens)
     self.vocab = sorted(list(self.vocab))
@@ -80,6 +80,7 @@ class TFIDF:
   def rank_documents(self, query, top_k):
     query_vector = self.query_vector(query)
     pq = PriorityQueue()
+
 
     for doc_id, doc_vec in self.tfidf_matrix:
       similarity = self.cosine_similarity(query_vector, doc_vec)
