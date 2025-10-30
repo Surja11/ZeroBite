@@ -9,7 +9,7 @@ const CartPage = () => {
    const navigate = useNavigate();
   const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const handleCheckout = () => {
-    navigate('/checkout'); // 🛠️ navigate to checkout
+    navigate('/checkout'); 
   };
   return (
     <>
