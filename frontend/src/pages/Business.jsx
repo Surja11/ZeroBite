@@ -247,10 +247,7 @@ const handleLogout =()=>{
                 </NavLink>
               </div>
             )}
-            <div className="flex items-center space-x-3 w-full px-5 py-2 hover:bg-gray-300 cursor-pointer">
-              <img src={order} alt="pro" className="w-5" />
-              <span>Order</span>
-            </div>
+            
             <div className="flex items-center justify-center space-x-3 w-full px-5 py-2  cursor-pointer">
 
               <button className="w-full bg-[#00a63e] text-white border-0 hover:bg-[#7aa500]" onClick={handleLogout}>Logout</button>

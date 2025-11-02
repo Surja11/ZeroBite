@@ -39,65 +39,6 @@ def showProduct(request, pk):
     cache.set(cache_key, serializer.data, timeout=86400) 
     return Response(serializer.data)
 
-# class StandardResultsSetPagination(PageNumberPagination):
-#     page_size = 15  
-    
-
-
-# class ProductView(APIView):
-#   def get(self, request):
-#     products = Product.objects.all()
-
-#     user_lat = float(request.query_params.get('lat'))
-#     user_lon = float(request.query_params.get('lon'))
-    
-#     distance_map = {}
-#     expiry_map = {}
-
-#     distance_list = []
-#     expiry_list = []
-
-#     for product in products:
-#       store_lat = float(product.business.store_latitude)
-#       store_lon = float(product.business.store_longitude)
-#       expiry = product.expiry_date
-
-#       distance = haversine(user_lat, store_lat, user_lon, store_lon)
-
-#       days_to_expiry = (expiry - date.today()).days
-
-#       distance_map[product.id] = distance
-#       expiry_map[product.id] = days_to_expiry
-#       distance_list.append(distance)
-#       expiry_list.append(days_to_expiry)
-
-#     max_distance = max(distance_list) if distance_list else 1
-#     max_days = max(expiry_list) if expiry_list else 1
-
-
-#     heap = PriorityQueue()
-
-#     for product in products:
-#       distance = distance_map[product.id]
-#       days_to_expiry = expiry_map[product.id]
-#       priority = calc_priority(distance, days_to_expiry, max_distance, max_days)
-#       heap.push(priority, product)
-    
-#     sorted_products = []
-#     while heap.size()>0:
-#       product = heap.pop()
-#       print("POPPED:", product)
-#       if product:
-#         sorted_products.append(product)
-    
-#     # paginator = StandardResultsSetPagination()
-#     # paginated_products = paginator.paginate_queryset(sorted_products, request)
-
-#     # serializer = ProductSerializer(paginated_products, many = True)
-#     # return paginator.get_paginated_response(serializer.data)
-#     serializer = ProductSerializer(sorted_products, many = True)
-#     return Response(serializer.data)
-
 
 
 class ProductView(APIView):
@@ -138,6 +79,8 @@ class ProductView(APIView):
         for product, distance, days in zip(products, distances, expiry_days):
             priority = calc_priority(distance, days, max_distance, max_days)
             heap.push(priority, product)
+            
+        print(heap)
         print("pushed in priority queue")
 
         sorted_products = []
@@ -146,7 +89,7 @@ class ProductView(APIView):
             if product:
                 sorted_products.append(product)
         print("product sorted")
-
+        
         # paginator = StandardResultsSetPagination()
         # paginated_products = paginator.paginate_queryset(sorted_products,request)
 

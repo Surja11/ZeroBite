@@ -59,6 +59,12 @@ class TFIDF:
         tf = self.compute_tf(self.processed_documents[doc_id])  #returns a defaultdict
         tfidf_vector = [tf.get(term, 0) * self.idf.get(term, 0) for term in self.vocab]
         self.tfidf_matrix.append((doc_id, tfidf_vector))
+    # print("\n=========== TF-IDF MATRIX ===========")
+    # for doc_id, vec in self.tfidf_matrix:
+    #       print(f"Product {doc_id}: {vec}")
+    #       print()
+
+  
     
     return self.tfidf_matrix
 
@@ -94,11 +100,14 @@ class TFIDF:
 
 if __name__ == "__main__":
   documents = {
-    "doc1": "The best pizza place in Kathmandu",
-    "doc2": "The best burger place in Kathmandu",
-    "doc3": "Delicious pizza",
-    "doc4":"The best food in Kathmandu",
-    "doc5":"The best pizza all over Nepal"
+    "doc1": "butter creamy dairy spread",
+
+    "doc2": "cheese creamy dairy block",
+
+    "doc3": "orange sweet citrus fruit",
+
+    "doc4":"apple organic sweet fruit",
+    
   }
 
   tfidf = TFIDF(documents)
@@ -107,5 +116,8 @@ if __name__ == "__main__":
 
   similarity = tfidf.cosine_similarity(matrix[0][1], matrix[1][1])
   print(f"Similarity between doc1 and doc2: {similarity:.2f}")
-  tfidf.rank_documents("Best pizza", top_k=2)
-   
+  similarity = tfidf.cosine_similarity(matrix[0][1], matrix[2][1])
+  print(f"Similarity between doc1 and doc3: {similarity:.2f}")
+  similarity = tfidf.cosine_similarity(matrix[0][1], matrix[3][1])
+  print(f"Similarity between doc1 and doc4: {similarity:.2f}")
+
