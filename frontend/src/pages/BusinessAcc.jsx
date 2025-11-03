@@ -1,4 +1,3 @@
-// Converted TypeScript + React to React JS
 
 import React, { useState, useEffect } from "react";
 import "leaflet/dist/leaflet.css";
