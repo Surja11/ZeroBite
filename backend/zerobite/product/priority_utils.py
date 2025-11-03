@@ -92,4 +92,51 @@ def calc_priority(distance_km, days_to_expiry, max_distance, max_days):
   return norm_distance * 0.3 + norm_expiry * 0.7
 
 
+if __name__ == "__main__":
+   
+    class Product:
+        def __init__(self, name, store_lat, store_lon, days_to_expiry):
+            self.name = name
+            self.business = type('Business', (), {})() 
+            self.business.store_latitude = store_lat
+            self.business.store_longitude = store_lon
+            self.days_to_expiry = days_to_expiry
 
+        def __repr__(self):
+            return f"{self.name} (Expiry: {self.days_to_expiry} days)"
+
+    user_lat = 27.7
+    user_lon = 85.3
+
+ 
+    products = [
+        Product("Milk", 27.701, 85.302, 2),
+        Product("Cheese", 27.705, 85.305, 5),
+        Product("Butter", 27.710, 85.310, 1),
+        Product("Yogurt", 27.695, 85.290, 4)
+    ]
+
+    print("user location")
+    print(f"latitude:{user_lat} longitude:{user_lon}")
+    print()
+
+    print("products and their details")
+    for product in products:
+       print(f"{product.name}, store_latitude:{product.business.store_latitude}, store_longitude:{product.business.store_longitude}, days till expiry:{product.days_to_expiry}")
+       print()
+
+   
+    distances = batch_haversine(user_lat, user_lon, products)
+
+
+    max_distance = max(distances)
+    max_days = max(p.days_to_expiry for p in products)
+
+    pq = PriorityQueue()
+    for product, distance in zip(products, distances):
+        priority = calc_priority(distance, product.days_to_expiry, max_distance, max_days)
+        pq.push(priority, product)
+
+    print("Products sorted by priority (most urgent first):")
+    while pq.size() > 0:
+        print(pq.pop())
