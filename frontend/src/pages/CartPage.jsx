@@ -14,6 +14,7 @@ const CartPage = () => {
     return sum + itemPrice * item.quantity;
   }, 0);
 
+  
   const handleCheckout = () => {
     navigate("/checkout");
   };
