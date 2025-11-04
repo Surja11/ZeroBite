@@ -110,7 +110,7 @@ if __name__ == "__main__":
 
  
     products = [
-        Product("Milk", 27.701, 85.302, 2),
+        Product("Biscuit", 27.701, 85.302, 2),
         Product("Cheese", 27.705, 85.305, 5),
         Product("Butter", 27.710, 85.310, 1),
         Product("Yogurt", 27.695, 85.290, 4)
